@@ -1,0 +1,16 @@
+{
+  "name": "mock-server",
+  "version": "1.0.0",
+  "description": "Example server for vrchat-video-ui",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sky Young",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
