@@ -167,8 +167,8 @@ class VodCache {
 
     if (this.env.videoCodec) {
       args.push('-c:v', this.env.videoCodec);
-      if (this.env.videoCodec !== 'copy' && this.env.videoProfile) {
-        args.push('-profile:v', this.env.videoProfile);
+      if (this.env.videoCodec !== 'copy') {
+        args.push('-profile:v', 'high');
       }
       if (this.env.videoCodec !== 'copy' && this.env.videoBitrate) {
         args.push('-b:v', this.env.videoBitrate);
@@ -181,34 +181,38 @@ class VodCache {
       }
     }
 
+    args.push('-level:v', '4.1')
+    args.push('-r', '30') // 30 fps
+    // keyframe every 4 seconds (to match ts segment times)
+    args.push('-g', '120')
+    args.push('-keyint_min', '120')
+
+
     if (this.env.audioCodec) {
-      args.push('-c:a', this.env.audioCodec);
+      args.push('-c:a', 'aac');
       if (this.env.audioCodec !== 'copy' && this.env.audioBitrate) {
         args.push('-b:a', this.env.audioBitrate);
       }
     }
 
-    const playlistSize = this.env.hlsWindowSegments > 0 ? this.env.hlsWindowSegments : 0;
+    args.push('-ac', '2')
+    args.push('-ar', '48000')
+
     const segmentPattern = normalizeForFfmpeg(this.segmentPatternFor(plexId));
     const playlistPath = normalizeForFfmpeg(this.playlistPathFor(plexId));
 
     args.push(
-      '-f',
-      'hls',
-      '-hls_time',
-      String(this.env.hlsSegmentDuration),
-      '-hls_list_size',
-      String(playlistSize),
-      '-hls_playlist_type',
-      'vod',
-      '-hls_segment_type',
-      'mpegts',
-      '-hls_flags',
-      'independent_segments',
-      '-hls_segment_filename',
-      segmentPattern,
+      '-f', 'hls',
+      '-hls_time', String(this.env.hlsSegmentDuration),
+      '-hls_list_size', '0',
+      '-hls_playlist_type', 'vod',
+      '-hls_segment_type', 'mpegts',
+      '-hls_flags', 'independent_segments',
+      '-hls_segment_filename', segmentPattern,
       playlistPath,
     );
+
+    console.log("ffmpeg " + args.join(" "))
 
     return args;
   }
