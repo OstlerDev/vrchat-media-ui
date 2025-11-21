@@ -3,22 +3,18 @@ const express = require('express');
 const asyncHandler = (handler) => (req, res, next) =>
   Promise.resolve(handler(req, res, next)).catch(next);
 
-const createStreamingRouter = ({ streamSessionManager }) => {
-  if (!streamSessionManager) {
-    throw new Error('streamSessionManager is required');
+const createStreamingRouter = ({ vodCache }) => {
+  if (!vodCache) {
+    throw new Error('vodCache is required');
   }
 
   const router = express.Router();
 
   router.get(
-    '/stream/movies/:plexId.m3u8',
+    '/stream/movies/:plexId/index.m3u8',
     asyncHandler(async (req, res) => {
       const { plexId } = req.params;
-      const playlist = await streamSessionManager.getPlaylist(plexId);
-      if (!playlist) {
-        res.status(503).json({ error: 'Stream not ready' });
-        return;
-      }
+      const playlist = await vodCache.getPlaylist(plexId);
       res.setHeader('Cache-Control', 'no-store');
       res.type('application/vnd.apple.mpegurl').send(playlist);
     }),
@@ -28,7 +24,7 @@ const createStreamingRouter = ({ streamSessionManager }) => {
     '/stream/movies/:plexId/:segmentName',
     asyncHandler(async (req, res) => {
       const { plexId, segmentName } = req.params;
-      const segment = await streamSessionManager.getSegment(plexId, segmentName);
+      const segment = await vodCache.getSegment(plexId, segmentName);
 
       if (!segment) {
         res.status(404).json({ error: 'Segment not found' });

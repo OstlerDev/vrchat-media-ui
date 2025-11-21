@@ -2,17 +2,19 @@ const express = require('express');
 const { createRouter } = require('./routes');
 const logger = require('./logger');
 const { env } = require('./config/env');
-const { createStreamSessionManager } = require('./services/streamSession');
+const { createVodCache } = require('./services/vodCache');
 
 const PORT = env.port;
 const app = express();
-const streamSessionManager = createStreamSessionManager({ env, logger });
+const vodCache = createVodCache({ env, logger });
 let isOnline = false;
 
-app.use(createRouter({
-  isHealthy: () => isOnline,
-  streamSessionManager,
-}));
+app.use(
+  createRouter({
+    isHealthy: () => isOnline,
+    vodCache,
+  }),
+);
 
 const server = app.listen(PORT, () => {
   isOnline = true;
@@ -21,7 +23,9 @@ const server = app.listen(PORT, () => {
 
 const shutdown = async () => {
   try {
-    await streamSessionManager.shutdown();
+    if (typeof vodCache.shutdown === 'function') {
+      await vodCache.shutdown();
+    }
   } catch (err) {
     logger.error({ err }, 'Failed to shutdown stream manager');
   }

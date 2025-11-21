@@ -23,8 +23,13 @@ Streaming gateway that proxies Plex media into locally generated HLS streams for
 
 The service exposes:
 - `GET /stream/movies/:plexId.m3u8` – playlist for a given Plex metadata id
-- `GET /stream/movies/:plexId/:segment.ts` – HLS segment proxy for active sessions
+- `GET /stream/movies/:plexId/:segment.ts` – cached HLS segment for that Plex id
 - `GET /health` – readiness indicator
+
+### Streaming model
+- On the first request for a Plex id, the server remuxes the entire movie into a VOD-style HLS playlist inside `STREAM_CACHE_DIR/<plexId>`. The HTTP request blocks until the playlist is ready so players can immediately see the total duration and remaining time.
+- Subsequent viewers reuse the cached playlist/segments instead of spawning new ffmpeg processes, allowing many users around the world to watch the same title concurrently.
+- Cached artifacts persist on disk until you delete them (manually or via external cleanup).
 
 ## Environment variables
 | Name | Description | Default |
@@ -37,12 +42,11 @@ The service exposes:
 | `FFMPEG_PROBESIZE` | ffmpeg `-probesize` value for stream detection | `20000000` |
 | `FFMPEG_ANALYZE_DURATION` | ffmpeg `-analyzeduration` value | `20000000` |
 | `HLS_SEGMENT_DURATION` | Seconds per generated segment | `4` |
-| `HLS_WINDOW_SEGMENTS` | Playlist length (# of segments) | `6` |
-| `SESSION_TTL_MS` | Idle timeout before tearing down ffmpeg (ms) | `600000` |
-| `VIDEO_CODEC` | ffmpeg `-c:v` value | `libx264` |
-| `VIDEO_PROFILE` | ffmpeg `-profile:v` value for video transcode | `baseline` |
+| `HLS_WINDOW_SEGMENTS` | Playlist length (# of segments, use `0` for full VOD) | `0` |
+| `VIDEO_CODEC` | ffmpeg `-c:v` value | `copy` |
+| `VIDEO_PROFILE` | ffmpeg `-profile:v` value for video transcode | _unset_ |
 | `VIDEO_BITRATE` | ffmpeg `-b:v` value (ignored when codec=`copy`) | `3500k` |
-| `AUDIO_CODEC` | ffmpeg `-c:a` value | `aac` |
+| `AUDIO_CODEC` | ffmpeg `-c:a` value | `copy` |
 | `AUDIO_BITRATE` | ffmpeg `-b:a` (ignored when codec=`copy`) | `128k` |
 | `STREAM_CACHE_DIR` | Directory for transient `.m3u8` + segment files | `.streams` |
 
@@ -54,4 +58,4 @@ docker run --env-file .env -p 4000:4000 plex-server
 
 When running in Docker, remember to set `PLEX_BASE_URL` to an address reachable from inside the container (e.g. host.docker.internal on macOS).
 
-HLS playlists and transport stream segments are written to `STREAM_CACHE_DIR` per Plex ID while ffmpeg is running and are deleted automatically when the session expires or the process shuts down. Make sure the directory is writable in your deployment environment (bind-mount or use a tmpfs when containerized). By default only the primary video/audio streams are mapped and subtitle/data tracks are dropped to avoid muxing errors; adjust the ffmpeg flags in `services/streamSession.js` if you need alternate behavior.
+HLS playlists and transport stream segments are written to `STREAM_CACHE_DIR/<plexId>` and reused for subsequent viewers. Clean the directory manually when you want to reclaim disk space. By default only the primary video/audio streams are mapped and subtitle/data tracks are dropped to avoid muxing errors; adjust the ffmpeg flags in `services/vodCache.js` if you need alternate behavior.
