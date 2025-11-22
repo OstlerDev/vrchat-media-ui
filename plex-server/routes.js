@@ -1,13 +1,9 @@
 const express = require('express');
 const { createStreamingRouter } = require('./routes/streaming');
 
-const createRouter = ({ isHealthy, vodCache }) => {
+const createRouter = ({ isHealthy, vodCache, jitEncoder, hybridVod }) => {
   if (typeof isHealthy !== 'function') {
     throw new TypeError('isHealthy must be a function');
-  }
-
-  if (!vodCache) {
-    throw new Error('vodCache is required');
   }
 
   const router = express.Router();
@@ -25,7 +21,7 @@ const createRouter = ({ isHealthy, vodCache }) => {
     res.json({ healthy: true });
   });
 
-  router.use(createStreamingRouter({ vodCache }));
+  router.use(createStreamingRouter({ vodCache, jitEncoder, hybridVod }));
 
   router.use((_req, res) => {
     res.status(404).json({ error: 'Not Found' });

@@ -25,6 +25,14 @@ const getRequired = (key) => {
   return value;
 };
 
+const normalizeProviderType = (value) => {
+  if (!value) {
+    return 'VOD_CACHE';
+  }
+  const normalized = String(value).trim().toUpperCase();
+  return ['VOD_CACHE', 'JIT_ENCODER', 'HYBRID'].includes(normalized) ? normalized : 'VOD_CACHE';
+};
+
 const env = {
   port: parseNumber(process.env.PORT, 4000),
   plexBaseUrl: getRequired('PLEX_BASE_URL').replace(/\/+$/, ''),
@@ -44,6 +52,14 @@ const env = {
   videoBitrate: process.env.VIDEO_BITRATE || '3500k',
   audioBitrate: process.env.AUDIO_BITRATE || '128k',
   streamCacheDir: resolvePath(process.env.STREAM_CACHE_DIR, '../.streams'),
+  providerType: normalizeProviderType(process.env.PROVIDER_TYPE),
+  jitFallbackDurationSeconds: parseNumber(process.env.JIT_FALLBACK_DURATION_SECONDS, 600),
+  hybridMinReadySegments: parseNumber(process.env.HYBRID_MIN_READY_SEGMENTS, 10),
+  hybridMaxPlaylistSegments: parseNumber(process.env.HYBRID_MAX_PLAYLIST_SEGMENTS, 20),
+  hybridSegmentWaitTimeoutMs: parseNumber(process.env.HYBRID_SEGMENT_WAIT_TIMEOUT_MS, 15_000),
+  hybridSegmentPollIntervalMs: parseNumber(process.env.HYBRID_SEGMENT_POLL_INTERVAL_MS, 500),
+  hybridSegmentReadTimeoutMs: parseNumber(process.env.HYBRID_SEGMENT_READ_TIMEOUT_MS, 10_000),
+  hybridSegmentReadPollMs: parseNumber(process.env.HYBRID_SEGMENT_READ_POLL_MS, 200),
 };
 
 module.exports = { env };
