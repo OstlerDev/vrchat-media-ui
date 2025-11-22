@@ -1,6 +1,6 @@
 
 
-export class UI {
+class UI {
     constructor() {
 
     }
@@ -22,9 +22,9 @@ export class UI {
     //     },
       
     //     // one of the following depending on screenType:
-    //     "items": [],               // for grid/list
-    //     "rows": [],                // for rows screen
-    //     "item": {}                 // for details screen
+    //     // "items": [],               // for grid/list
+    //     // "rows": [],                // for rows screen
+    //     // "item": {}                 // for details screen
     //   }
     handleAPIRequest (_req, res) {
         const query = (_req && _req.query) ? _req.query : {};
@@ -228,3 +228,5 @@ export class UI {
         })
     }
 }
+
+module.exports = UI;

@@ -1,9 +1,11 @@
+
 const express = require('express');
 const { createStreamingRouter } = require('./routes/streaming');
 const { createImageRouter } = require('./routes/images');
+const { createUiRouter } = require('./routes/ui');
 const logger = require('./logger');
 
-const createRouter = ({ isHealthy, vodCache, jitEncoder, hybridVod, plexClient }) => {
+const createRouter = ({ isHealthy, vodCache, jitEncoder, hybridVod, plexClient, slotManager }) => {
   if (typeof isHealthy !== 'function') {
     throw new TypeError('isHealthy must be a function');
   }
@@ -24,7 +26,8 @@ const createRouter = ({ isHealthy, vodCache, jitEncoder, hybridVod, plexClient }
   });
 
   if (plexClient) {
-    router.use('/imgs', createImageRouter({ plexClient }));
+    router.use('/imgs', createImageRouter({ plexClient, slotManager }));
+    router.use('/ui', createUiRouter({ plexClient, slotManager }));
   } else {
     logger.error('Plex client not provided');
     process.exit(-1)

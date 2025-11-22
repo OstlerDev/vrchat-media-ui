@@ -1,3 +1,4 @@
+
 const express = require('express');
 const { createRouter } = require('./routes');
 const logger = require('./logger');
@@ -6,6 +7,7 @@ const { createVodCache } = require('./services/vodCache');
 const { createJitEncoder } = require('./services/JITencoder');
 const { createHybridVod } = require('./services/hybridVod');
 const { createPlexClient } = require('./lib/plexClient');
+const { createSlotManager } = require('./services/slotManager');
 
 const PORT = env.port;
 const app = express();
@@ -37,6 +39,7 @@ app.use((req, res, next) => {
 });
 
 const plexClient = createPlexClient({ env, logger });
+const slotManager = createSlotManager();
 const providerType = env.providerType || 'VOD_CACHE';
 const shouldInitVodCache = providerType === 'VOD_CACHE' || providerType === 'HYBRID';
 const vodCache = shouldInitVodCache ? createVodCache({ env, logger }) : null;
@@ -54,6 +57,7 @@ app.use(
     jitEncoder,
     hybridVod,
     plexClient,
+    slotManager,
   }),
 );
 

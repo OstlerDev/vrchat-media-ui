@@ -1,3 +1,4 @@
+
 const axios = require('axios');
 
 const createPlexClient = ({ env, logger }) => {
@@ -101,10 +102,30 @@ const createPlexClient = ({ env, logger }) => {
     }
   };
 
+  const getTranscodedImage = async (path, width, height) => {
+    try {
+       const response = await http.get('/photo/:/transcode', {
+          params: {
+              url: path,
+              width: width,
+              height: height,
+              minSize: 1,
+              upscale: 1
+          },
+          responseType: 'stream'
+       });
+       return response;
+    } catch (error) {
+        logger.error({ err: error, path }, 'Failed to fetch transcoded image');
+        throw error;
+    }
+ };
+
   return {
     getMetadata,
     getPrimaryPartStreamUrl,
     getAssetStream,
+    getTranscodedImage,
     search,
     getRecentlyAdded,
   };

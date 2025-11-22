@@ -1,0 +1,21 @@
+{
+    "name": "MediaUI",
+    "rootNamespace": "",
+    "references": [
+        "UdonSharp.Runtime",
+        "VRC.SDKBase",
+        "VRC.SDK3",
+        "VRC.SDK3.Components",
+        "VRC.Udon",
+        "Unity.TextMeshPro"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
