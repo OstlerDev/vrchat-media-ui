@@ -30,6 +30,39 @@ const createPlexClient = ({ env, logger }) => {
     return target.toString();
   };
 
+  const search = async (query) => {
+    try {
+      const { data } = await http.get('/hubs/search', {
+        params: { query, limit: 30 }
+      });
+      const hubs = data?.MediaContainer?.Hub || [];
+      const results = [];
+      for (const hub of hubs) {
+        if (hub.type === 'movie' || hub.type === 'show') {
+          if (hub.Metadata) {
+            results.push(...hub.Metadata);
+          }
+        }
+      }
+      return results;
+    } catch (error) {
+      logger.error({ err: error, query }, 'Failed to search Plex');
+      return [];
+    }
+  };
+
+  const getRecentlyAdded = async () => {
+    try {
+      const { data } = await http.get('/library/recentlyAdded', {
+        params: { limit: 30 }
+      });
+      return data?.MediaContainer?.Metadata || [];
+    } catch (error) {
+      logger.error({ err: error }, 'Failed to fetch recently added');
+      return [];
+    }
+  };
+
   const getMetadata = async (plexId) => {
     try {
       const { data } = await http.get(`/library/metadata/${plexId}`);
@@ -56,9 +89,24 @@ const createPlexClient = ({ env, logger }) => {
     return normalizeUrl(part.key || part.file);
   };
 
+  const getAssetStream = async (relativePath) => {
+    try {
+      const response = await http.get(relativePath, {
+        responseType: 'stream'
+      });
+      return response;
+    } catch (error) {
+      logger.error({ err: error, path: relativePath }, 'Failed to fetch asset stream');
+      throw error;
+    }
+  };
+
   return {
     getMetadata,
     getPrimaryPartStreamUrl,
+    getAssetStream,
+    search,
+    getRecentlyAdded,
   };
 };
 

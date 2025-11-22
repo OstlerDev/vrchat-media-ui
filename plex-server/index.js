@@ -5,9 +5,38 @@ const { env } = require('./config/env');
 const { createVodCache } = require('./services/vodCache');
 const { createJitEncoder } = require('./services/JITencoder');
 const { createHybridVod } = require('./services/hybridVod');
+const { createPlexClient } = require('./lib/plexClient');
 
 const PORT = env.port;
 const app = express();
+
+// Middleware to log all HTTP requests
+app.use((req, res, next) => {
+  const start = Date.now();
+  logger.info({
+    method: req.method,
+    url: req.url,
+    ip: req.ip,
+    userAgent: req.get('User-Agent'),
+    referer: req.get('Referer')
+  }, 'HTTP Request');
+
+  // Log response when finished
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    logger.info({
+      method: req.method,
+      url: req.url,
+      status: res.statusCode,
+      duration: `${duration}ms`,
+      ip: req.ip
+    }, 'HTTP Response');
+  });
+
+  next();
+});
+
+const plexClient = createPlexClient({ env, logger });
 const providerType = env.providerType || 'VOD_CACHE';
 const shouldInitVodCache = providerType === 'VOD_CACHE' || providerType === 'HYBRID';
 const vodCache = shouldInitVodCache ? createVodCache({ env, logger }) : null;
@@ -24,6 +53,7 @@ app.use(
     vodCache,
     jitEncoder,
     hybridVod,
+    plexClient,
   }),
 );
 
