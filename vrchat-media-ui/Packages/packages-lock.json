@@ -217,6 +217,18 @@
         "com.unity.ai.navigation": "1.1.5"
       }
     },
+    "idv.jlchntoz.vrcw-foundation": {
+      "version": "file:idv.jlchntoz.vrcw-foundation",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "idv.jlchntoz.vvmw": {
+      "version": "file:idv.jlchntoz.vvmw",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

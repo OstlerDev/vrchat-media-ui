@@ -28,17 +28,17 @@
       "version": "0.1.29",
       "dependencies": {}
     },
+    "idv.jlchntoz.vrcw-foundation": {
+      "version": "0.0.42",
+      "dependencies": {
+        "com.vrchat.worlds": "3.x.x"
+      }
+    },
     "idv.jlchntoz.vvmw": {
       "version": "1.4.12",
       "dependencies": {
         "com.vrchat.worlds": "3.x.x",
         "idv.jlchntoz.vrcw-foundation": "0.0.x >=0.0.39"
-      }
-    },
-    "idv.jlchntoz.vrcw-foundation": {
-      "version": "0.0.42",
-      "dependencies": {
-        "com.vrchat.worlds": "3.x.x"
       }
     }
   }
