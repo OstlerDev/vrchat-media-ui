@@ -1,4 +1,4 @@
-﻿
+
 using UdonSharp;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,6 +12,9 @@ public class MediaItemView : UdonSharpBehaviour
     public TextMeshProUGUI subtitleText;
     public RawImage posterImage;
 
+    private int _actionSlotId = -1;
+    private MediaGridManager _gridManager;
+
     public void SetContent(string title, string subtitle)
     {
         if (titleText != null) titleText.text = title;
@@ -24,6 +27,20 @@ public class MediaItemView : UdonSharpBehaviour
         {
             posterImage.texture = texture;
             posterImage.uvRect = uvRect;
+        }
+    }
+
+    public void SetAction(int slotId, MediaGridManager gridManager)
+    {
+        _actionSlotId = slotId;
+        _gridManager = gridManager;
+    }
+
+    public void OnClick()
+    {
+        if (_gridManager != null && _actionSlotId >= 0)
+        {
+            _gridManager.OnItemClicked(_actionSlotId);
         }
     }
 }

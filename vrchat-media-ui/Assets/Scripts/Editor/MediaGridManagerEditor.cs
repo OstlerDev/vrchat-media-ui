@@ -55,7 +55,7 @@ public class MediaGridManagerEditor : Editor
             }
         }
 
-        manager.mockImageUrls = allUrls.ToArray();
+        manager.imageSlotUrls = allUrls.ToArray();
         
         // Mark object as dirty to save changes to the scene/prefab
         EditorUtility.SetDirty(manager);

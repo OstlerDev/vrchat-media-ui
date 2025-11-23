@@ -327,83 +327,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &457353861
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 457353862}
-  - component: {fileID: 457353864}
-  - component: {fileID: 457353863}
-  m_Layer: 5
-  m_Name: media-ui
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &457353862
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 457353861}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1231}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 484913507}
-  - {fileID: 561477470}
-  m_Father: {fileID: 989418988}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &457353863
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 457353861}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &457353864
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 457353861}
-  m_CullTransparentMesh: 1
 --- !u!1 &484913506
 GameObject:
   m_ObjectHideFlags: 0
@@ -431,19 +354,19 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 484913506}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 678}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 112227191}
   - {fileID: 1989553754}
   - {fileID: 582267586}
-  m_Father: {fileID: 457353862}
+  m_Father: {fileID: 989418988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -1145, y: -258}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &484913508
@@ -546,6 +469,11 @@ GameObject:
   - component: {fileID: 561477470}
   - component: {fileID: 561477472}
   - component: {fileID: 561477471}
+  - component: {fileID: 561477475}
+  - component: {fileID: 561477474}
+  - component: {fileID: 561477473}
+  - component: {fileID: 561477477}
+  - component: {fileID: 561477476}
   m_Layer: 5
   m_Name: MediaGridContainer
   m_TagString: Untagged
@@ -560,16 +488,16 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561477469}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 678}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 457353862}
+  m_Father: {fileID: 989418988}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -1145, y: -258}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &561477471
@@ -610,6 +538,342 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 561477469}
   m_CullTransparentMesh: 1
+--- !u!114 &561477473
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561477469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45115577ef41a5b4ca741ed302693907, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactTextPlacement: {fileID: 0}
+  interactText: Use
+  interactTextGO: {fileID: 0}
+  proximity: 2
+  SynchronizePosition: 0
+  AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
+  _syncMethod: 2
+  serializedProgramAsset: {fileID: 11400000, guid: 60808b216e6ce55488eec942cc72fa0d,
+    type: 2}
+  programSource: {fileID: 11400000, guid: f286fdebc02b75c4daad0df58b7f8376, type: 2}
+  serializedPublicVariablesBytesString: Ai8AAAAAATIAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAFQAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AAAAAAAYBAAAAAAAAACcBBAAAAHQAeQBwAGUAAWgAAABTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEcAZQBuAGUAcgBpAGMALgBMAGkAcwB0AGAAMQBbAFsAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBJAG4AdABlAHIAZgBhAGMAZQBzAC4ASQBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AXQBdACwAIABtAHMAYwBvAHIAbABpAGIAAQEJAAAAVgBhAHIAaQBhAGIAbABlAHMALwEAAAABaAAAAFMAeQBzAHQAZQBtAC4AQwBvAGwAbABlAGMAdABpAG8AbgBzAC4ARwBlAG4AZQByAGkAYwAuAEwAaQBzAHQAYAAxAFsAWwBWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAEkAbgB0AGUAcgBmAGEAYwBlAHMALgBJAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgBdAF0ALAAgAG0AcwBjAG8AcgBsAGkAYgABAAAABgEAAAAAAAAAAi8CAAAAAUkAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAGAAMQBbAFsAUwB5AHMAdABlAG0ALgBJAG4AdAAzADIALAAgAG0AcwBjAG8AcgBsAGkAYgBdAF0ALAAgAFYAUgBDAC4AVQBkAG8AbgAuAEMAbwBtAG0AbwBuAAIAAAAGAgAAAAAAAAAnAQQAAAB0AHkAcABlAAEXAAAAUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwAsACAAbQBzAGMAbwByAGwAaQBiACcBCgAAAFMAeQBtAGIAbwBsAE4AYQBtAGUAAR8AAABfAF8AXwBVAGQAbwBuAFMAaABhAHIAcABCAGUAaABhAHYAaQBvAHUAcgBWAGUAcgBzAGkAbwBuAF8AXwBfACcBBAAAAHQAeQBwAGUAARYAAABTAHkAcwB0AGUAbQAuAEkAbgB0ADMAMgAsACAAbQBzAGMAbwByAGwAaQBiABcBBQAAAFYAYQBsAHUAZQACAAAABwUHBQcF
+  publicVariablesUnityEngineObjects: []
+  publicVariablesSerializationDataFormat: 0
+--- !u!114 &561477474
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561477469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97ac3c2d9281e7d4b8e5d4078d4151da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  _udonSharpBackingUdonBehaviour: {fileID: 561477473}
+  itemPrefab: {fileID: 484913506}
+  contentRoot: {fileID: 561477470}
+  apiManager: {fileID: 561477477}
+  serviceUrls:
+  - http://localhost:4000
+  urlPattern: /imgs/slots/{0}.jpg
+  slotsPerService: 100
+  atlasCols: 8
+  atlasRows: 5
+  imageSlotUrls:
+  - url: http://localhost:4000/imgs/slots/0.jpg
+  - url: http://localhost:4000/imgs/slots/1.jpg
+  - url: http://localhost:4000/imgs/slots/2.jpg
+  - url: http://localhost:4000/imgs/slots/3.jpg
+  - url: http://localhost:4000/imgs/slots/4.jpg
+  - url: http://localhost:4000/imgs/slots/5.jpg
+  - url: http://localhost:4000/imgs/slots/6.jpg
+  - url: http://localhost:4000/imgs/slots/7.jpg
+  - url: http://localhost:4000/imgs/slots/8.jpg
+  - url: http://localhost:4000/imgs/slots/9.jpg
+  - url: http://localhost:4000/imgs/slots/10.jpg
+  - url: http://localhost:4000/imgs/slots/11.jpg
+  - url: http://localhost:4000/imgs/slots/12.jpg
+  - url: http://localhost:4000/imgs/slots/13.jpg
+  - url: http://localhost:4000/imgs/slots/14.jpg
+  - url: http://localhost:4000/imgs/slots/15.jpg
+  - url: http://localhost:4000/imgs/slots/16.jpg
+  - url: http://localhost:4000/imgs/slots/17.jpg
+  - url: http://localhost:4000/imgs/slots/18.jpg
+  - url: http://localhost:4000/imgs/slots/19.jpg
+  - url: http://localhost:4000/imgs/slots/20.jpg
+  - url: http://localhost:4000/imgs/slots/21.jpg
+  - url: http://localhost:4000/imgs/slots/22.jpg
+  - url: http://localhost:4000/imgs/slots/23.jpg
+  - url: http://localhost:4000/imgs/slots/24.jpg
+  - url: http://localhost:4000/imgs/slots/25.jpg
+  - url: http://localhost:4000/imgs/slots/26.jpg
+  - url: http://localhost:4000/imgs/slots/27.jpg
+  - url: http://localhost:4000/imgs/slots/28.jpg
+  - url: http://localhost:4000/imgs/slots/29.jpg
+  - url: http://localhost:4000/imgs/slots/30.jpg
+  - url: http://localhost:4000/imgs/slots/31.jpg
+  - url: http://localhost:4000/imgs/slots/32.jpg
+  - url: http://localhost:4000/imgs/slots/33.jpg
+  - url: http://localhost:4000/imgs/slots/34.jpg
+  - url: http://localhost:4000/imgs/slots/35.jpg
+  - url: http://localhost:4000/imgs/slots/36.jpg
+  - url: http://localhost:4000/imgs/slots/37.jpg
+  - url: http://localhost:4000/imgs/slots/38.jpg
+  - url: http://localhost:4000/imgs/slots/39.jpg
+  - url: http://localhost:4000/imgs/slots/40.jpg
+  - url: http://localhost:4000/imgs/slots/41.jpg
+  - url: http://localhost:4000/imgs/slots/42.jpg
+  - url: http://localhost:4000/imgs/slots/43.jpg
+  - url: http://localhost:4000/imgs/slots/44.jpg
+  - url: http://localhost:4000/imgs/slots/45.jpg
+  - url: http://localhost:4000/imgs/slots/46.jpg
+  - url: http://localhost:4000/imgs/slots/47.jpg
+  - url: http://localhost:4000/imgs/slots/48.jpg
+  - url: http://localhost:4000/imgs/slots/49.jpg
+  - url: http://localhost:4000/imgs/slots/50.jpg
+  - url: http://localhost:4000/imgs/slots/51.jpg
+  - url: http://localhost:4000/imgs/slots/52.jpg
+  - url: http://localhost:4000/imgs/slots/53.jpg
+  - url: http://localhost:4000/imgs/slots/54.jpg
+  - url: http://localhost:4000/imgs/slots/55.jpg
+  - url: http://localhost:4000/imgs/slots/56.jpg
+  - url: http://localhost:4000/imgs/slots/57.jpg
+  - url: http://localhost:4000/imgs/slots/58.jpg
+  - url: http://localhost:4000/imgs/slots/59.jpg
+  - url: http://localhost:4000/imgs/slots/60.jpg
+  - url: http://localhost:4000/imgs/slots/61.jpg
+  - url: http://localhost:4000/imgs/slots/62.jpg
+  - url: http://localhost:4000/imgs/slots/63.jpg
+  - url: http://localhost:4000/imgs/slots/64.jpg
+  - url: http://localhost:4000/imgs/slots/65.jpg
+  - url: http://localhost:4000/imgs/slots/66.jpg
+  - url: http://localhost:4000/imgs/slots/67.jpg
+  - url: http://localhost:4000/imgs/slots/68.jpg
+  - url: http://localhost:4000/imgs/slots/69.jpg
+  - url: http://localhost:4000/imgs/slots/70.jpg
+  - url: http://localhost:4000/imgs/slots/71.jpg
+  - url: http://localhost:4000/imgs/slots/72.jpg
+  - url: http://localhost:4000/imgs/slots/73.jpg
+  - url: http://localhost:4000/imgs/slots/74.jpg
+  - url: http://localhost:4000/imgs/slots/75.jpg
+  - url: http://localhost:4000/imgs/slots/76.jpg
+  - url: http://localhost:4000/imgs/slots/77.jpg
+  - url: http://localhost:4000/imgs/slots/78.jpg
+  - url: http://localhost:4000/imgs/slots/79.jpg
+  - url: http://localhost:4000/imgs/slots/80.jpg
+  - url: http://localhost:4000/imgs/slots/81.jpg
+  - url: http://localhost:4000/imgs/slots/82.jpg
+  - url: http://localhost:4000/imgs/slots/83.jpg
+  - url: http://localhost:4000/imgs/slots/84.jpg
+  - url: http://localhost:4000/imgs/slots/85.jpg
+  - url: http://localhost:4000/imgs/slots/86.jpg
+  - url: http://localhost:4000/imgs/slots/87.jpg
+  - url: http://localhost:4000/imgs/slots/88.jpg
+  - url: http://localhost:4000/imgs/slots/89.jpg
+  - url: http://localhost:4000/imgs/slots/90.jpg
+  - url: http://localhost:4000/imgs/slots/91.jpg
+  - url: http://localhost:4000/imgs/slots/92.jpg
+  - url: http://localhost:4000/imgs/slots/93.jpg
+  - url: http://localhost:4000/imgs/slots/94.jpg
+  - url: http://localhost:4000/imgs/slots/95.jpg
+  - url: http://localhost:4000/imgs/slots/96.jpg
+  - url: http://localhost:4000/imgs/slots/97.jpg
+  - url: http://localhost:4000/imgs/slots/98.jpg
+  - url: http://localhost:4000/imgs/slots/99.jpg
+  loadOnStart: 1
+  verboseLogging: 1
+--- !u!114 &561477475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561477469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 0
+  m_CellSize: {x: 200, y: 300}
+  m_Spacing: {x: 20, y: 20}
+  m_Constraint: 0
+  m_ConstraintCount: 2
+--- !u!114 &561477476
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561477469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 45115577ef41a5b4ca741ed302693907, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  interactTextPlacement: {fileID: 0}
+  interactText: Use
+  interactTextGO: {fileID: 0}
+  proximity: 2
+  SynchronizePosition: 0
+  AllowCollisionOwnershipTransfer: 0
+  Reliable: 0
+  _syncMethod: 1
+  serializedProgramAsset: {fileID: 11400000, guid: cb127cdac8f549248b4dba8e3bc92509,
+    type: 2}
+  programSource: {fileID: 11400000, guid: 304fe9928ab0d214a8d98184ed566ab6, type: 2}
+  serializedPublicVariablesBytesString: Ai8AAAAAATIAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAFQAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AAAAAAAYBAAAAAAAAACcBBAAAAHQAeQBwAGUAAWgAAABTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEcAZQBuAGUAcgBpAGMALgBMAGkAcwB0AGAAMQBbAFsAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4ALgBJAG4AdABlAHIAZgBhAGMAZQBzAC4ASQBVAGQAbwBuAFYAYQByAGkAYQBiAGwAZQAsACAAVgBSAEMALgBVAGQAbwBuAC4AQwBvAG0AbQBvAG4AXQBdACwAIABtAHMAYwBvAHIAbABpAGIAAQEJAAAAVgBhAHIAaQBhAGIAbABlAHMALwEAAAABaAAAAFMAeQBzAHQAZQBtAC4AQwBvAGwAbABlAGMAdABpAG8AbgBzAC4ARwBlAG4AZQByAGkAYwAuAEwAaQBzAHQAYAAxAFsAWwBWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAEkAbgB0AGUAcgBmAGEAYwBlAHMALgBJAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlACwAIABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgBdAF0ALAAgAG0AcwBjAG8AcgBsAGkAYgABAAAABgEAAAAAAAAAAi8CAAAAAUkAAABWAFIAQwAuAFUAZABvAG4ALgBDAG8AbQBtAG8AbgAuAFUAZABvAG4AVgBhAHIAaQBhAGIAbABlAGAAMQBbAFsAUwB5AHMAdABlAG0ALgBJAG4AdAAzADIALAAgAG0AcwBjAG8AcgBsAGkAYgBdAF0ALAAgAFYAUgBDAC4AVQBkAG8AbgAuAEMAbwBtAG0AbwBuAAIAAAAGAgAAAAAAAAAnAQQAAAB0AHkAcABlAAEXAAAAUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwAsACAAbQBzAGMAbwByAGwAaQBiACcBCgAAAFMAeQBtAGIAbwBsAE4AYQBtAGUAAR8AAABfAF8AXwBVAGQAbwBuAFMAaABhAHIAcABCAGUAaABhAHYAaQBvAHUAcgBWAGUAcgBzAGkAbwBuAF8AXwBfACcBBAAAAHQAeQBwAGUAARYAAABTAHkAcwB0AGUAbQAuAEkAbgB0ADMAMgAsACAAbQBzAGMAbwByAGwAaQBiABcBBQAAAFYAYQBsAHUAZQACAAAABwUHBQcF
+  publicVariablesUnityEngineObjects: []
+  publicVariablesSerializationDataFormat: 0
+--- !u!114 &561477477
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 561477469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cd6e50c9a7f2ad4891e50f0c755379e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes: []
+  _udonSharpBackingUdonBehaviour: {fileID: 561477476}
+  homeUrl:
+    url: http://localhost:4000/api/ui/home
+  slotUrls:
+  - url: http://localhost:4000/api/ui/slots/0
+  - url: http://localhost:4000/api/ui/slots/1
+  - url: http://localhost:4000/api/ui/slots/2
+  - url: http://localhost:4000/api/ui/slots/3
+  - url: http://localhost:4000/api/ui/slots/4
+  - url: http://localhost:4000/api/ui/slots/5
+  - url: http://localhost:4000/api/ui/slots/6
+  - url: http://localhost:4000/api/ui/slots/7
+  - url: http://localhost:4000/api/ui/slots/8
+  - url: http://localhost:4000/api/ui/slots/9
+  - url: http://localhost:4000/api/ui/slots/10
+  - url: http://localhost:4000/api/ui/slots/11
+  - url: http://localhost:4000/api/ui/slots/12
+  - url: http://localhost:4000/api/ui/slots/13
+  - url: http://localhost:4000/api/ui/slots/14
+  - url: http://localhost:4000/api/ui/slots/15
+  - url: http://localhost:4000/api/ui/slots/16
+  - url: http://localhost:4000/api/ui/slots/17
+  - url: http://localhost:4000/api/ui/slots/18
+  - url: http://localhost:4000/api/ui/slots/19
+  - url: http://localhost:4000/api/ui/slots/20
+  - url: http://localhost:4000/api/ui/slots/21
+  - url: http://localhost:4000/api/ui/slots/22
+  - url: http://localhost:4000/api/ui/slots/23
+  - url: http://localhost:4000/api/ui/slots/24
+  - url: http://localhost:4000/api/ui/slots/25
+  - url: http://localhost:4000/api/ui/slots/26
+  - url: http://localhost:4000/api/ui/slots/27
+  - url: http://localhost:4000/api/ui/slots/28
+  - url: http://localhost:4000/api/ui/slots/29
+  - url: http://localhost:4000/api/ui/slots/30
+  - url: http://localhost:4000/api/ui/slots/31
+  - url: http://localhost:4000/api/ui/slots/32
+  - url: http://localhost:4000/api/ui/slots/33
+  - url: http://localhost:4000/api/ui/slots/34
+  - url: http://localhost:4000/api/ui/slots/35
+  - url: http://localhost:4000/api/ui/slots/36
+  - url: http://localhost:4000/api/ui/slots/37
+  - url: http://localhost:4000/api/ui/slots/38
+  - url: http://localhost:4000/api/ui/slots/39
+  - url: http://localhost:4000/api/ui/slots/40
+  - url: http://localhost:4000/api/ui/slots/41
+  - url: http://localhost:4000/api/ui/slots/42
+  - url: http://localhost:4000/api/ui/slots/43
+  - url: http://localhost:4000/api/ui/slots/44
+  - url: http://localhost:4000/api/ui/slots/45
+  - url: http://localhost:4000/api/ui/slots/46
+  - url: http://localhost:4000/api/ui/slots/47
+  - url: http://localhost:4000/api/ui/slots/48
+  - url: http://localhost:4000/api/ui/slots/49
+  - url: http://localhost:4000/api/ui/slots/50
+  - url: http://localhost:4000/api/ui/slots/51
+  - url: http://localhost:4000/api/ui/slots/52
+  - url: http://localhost:4000/api/ui/slots/53
+  - url: http://localhost:4000/api/ui/slots/54
+  - url: http://localhost:4000/api/ui/slots/55
+  - url: http://localhost:4000/api/ui/slots/56
+  - url: http://localhost:4000/api/ui/slots/57
+  - url: http://localhost:4000/api/ui/slots/58
+  - url: http://localhost:4000/api/ui/slots/59
+  - url: http://localhost:4000/api/ui/slots/60
+  - url: http://localhost:4000/api/ui/slots/61
+  - url: http://localhost:4000/api/ui/slots/62
+  - url: http://localhost:4000/api/ui/slots/63
+  - url: http://localhost:4000/api/ui/slots/64
+  - url: http://localhost:4000/api/ui/slots/65
+  - url: http://localhost:4000/api/ui/slots/66
+  - url: http://localhost:4000/api/ui/slots/67
+  - url: http://localhost:4000/api/ui/slots/68
+  - url: http://localhost:4000/api/ui/slots/69
+  - url: http://localhost:4000/api/ui/slots/70
+  - url: http://localhost:4000/api/ui/slots/71
+  - url: http://localhost:4000/api/ui/slots/72
+  - url: http://localhost:4000/api/ui/slots/73
+  - url: http://localhost:4000/api/ui/slots/74
+  - url: http://localhost:4000/api/ui/slots/75
+  - url: http://localhost:4000/api/ui/slots/76
+  - url: http://localhost:4000/api/ui/slots/77
+  - url: http://localhost:4000/api/ui/slots/78
+  - url: http://localhost:4000/api/ui/slots/79
+  - url: http://localhost:4000/api/ui/slots/80
+  - url: http://localhost:4000/api/ui/slots/81
+  - url: http://localhost:4000/api/ui/slots/82
+  - url: http://localhost:4000/api/ui/slots/83
+  - url: http://localhost:4000/api/ui/slots/84
+  - url: http://localhost:4000/api/ui/slots/85
+  - url: http://localhost:4000/api/ui/slots/86
+  - url: http://localhost:4000/api/ui/slots/87
+  - url: http://localhost:4000/api/ui/slots/88
+  - url: http://localhost:4000/api/ui/slots/89
+  - url: http://localhost:4000/api/ui/slots/90
+  - url: http://localhost:4000/api/ui/slots/91
+  - url: http://localhost:4000/api/ui/slots/92
+  - url: http://localhost:4000/api/ui/slots/93
+  - url: http://localhost:4000/api/ui/slots/94
+  - url: http://localhost:4000/api/ui/slots/95
+  - url: http://localhost:4000/api/ui/slots/96
+  - url: http://localhost:4000/api/ui/slots/97
+  - url: http://localhost:4000/api/ui/slots/98
+  - url: http://localhost:4000/api/ui/slots/99
+  gridManager: {fileID: 561477474}
 --- !u!1 &582267585
 GameObject:
   m_ObjectHideFlags: 0
@@ -695,7 +959,7 @@ GameObject:
   - component: {fileID: 989418986}
   - component: {fileID: 989418985}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: media-ui-canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -725,7 +989,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 989418984}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
@@ -740,7 +1004,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!223 &989418987
 Canvas:
   m_ObjectHideFlags: 0
@@ -750,8 +1014,8 @@ Canvas:
   m_GameObject: {fileID: 989418984}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 2
+  m_Camera: {fileID: 1069902876}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -773,17 +1037,18 @@ RectTransform:
   m_GameObject: {fileID: 989418984}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 457353862}
+  - {fileID: 484913507}
+  - {fileID: 561477470}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 1149.25, y: 661.25}
+  m_SizeDelta: {x: 1080, y: 720}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1069902874
 GameObject:
   m_ObjectHideFlags: 0
@@ -1309,6 +1574,15 @@ MonoBehaviour:
   NetworkIDs:
   - gameObject: {fileID: 3480278762663670689}
     ID: 10
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 484913506}
+    ID: 12
+    SerializedTypeNames:
+    - VRC.Udon.UdonBehaviour
+  - gameObject: {fileID: 561477469}
+    ID: 11
     SerializedTypeNames:
     - VRC.Udon.UdonBehaviour
     - VRC.Udon.UdonBehaviour

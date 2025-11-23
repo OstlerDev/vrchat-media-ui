@@ -51,7 +51,8 @@ class AtlasManager {
           enrichedItems.push({
             ...item,
             slotId: slotId,
-            uv: layout.uv
+            uv: layout.uv,
+            atlasIndex: layout.index
           });
         } else {
           // Fallback if image failed?
@@ -130,7 +131,8 @@ class AtlasManager {
             y: yNorm,
             w: wNorm,
             h: hNorm
-          }
+          },
+          index: res.index // Keep track of atlas index (0-39)
         };
       }
     });

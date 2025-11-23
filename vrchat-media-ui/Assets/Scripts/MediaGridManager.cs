@@ -1,8 +1,10 @@
-﻿
+
 using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Image;
+using VRC.SDK3.StringLoading; // Added namespace
+using VRC.SDK3.Data;
 using VRC.Udon;
 
 public class MediaGridManager : UdonSharpBehaviour
@@ -10,17 +12,24 @@ public class MediaGridManager : UdonSharpBehaviour
     [Header("Configuration")]
     public GameObject itemPrefab;
     public Transform contentRoot;
+    public APIManager apiManager;
     
     [Header("Generator Settings")]
     public string[] serviceUrls = new string[] { "http://localhost:4000" };
     public string urlPattern = "/imgs/slots/{0}.jpg";
     public int slotsPerService = 100;
 
+    [Header("Atlas Settings")]
+    // These must match the server constants (2048x2048 atlas, 256x384 thumbs)
+    public int atlasCols = 8;
+    public int atlasRows = 5; // Server might produce fewer rows if fewer items, but layout is fixed
+
     [Header("Data Source")]
-    public VRCUrl[] mockImageUrls; 
+    public VRCUrl[] imageSlotUrls; // Pool of URLs pointing to /imgs/slots/0 ... /imgs/slots/N
 
     [Header("Debug")]
     public bool loadOnStart = true;
+    public bool verboseLogging = true;
 
     // State
     private MediaItemView[] _spawnedItems;
@@ -34,6 +43,10 @@ public class MediaGridManager : UdonSharpBehaviour
 
     private VRCImageDownloader _downloader;
 
+    // Cached UVs
+    private float _uvW;
+    private float _uvH;
+
     void Start()
     {
         _downloader = new VRCImageDownloader();
@@ -46,39 +59,127 @@ public class MediaGridManager : UdonSharpBehaviour
         _activeDownloadUrls = new VRCUrl[10];
         _activeDownloadCount = 0;
 
-        if (loadOnStart)
+        // Calculate normalized width/height for UVs
+        // Server uses 256x384 on 2048x2048
+        // 256/2048 = 0.125
+        // 384/2048 = 0.1875
+        _uvW = 1.0f / (float)atlasCols;
+        // Note: Rows is tricky because server fits into 2048 but uses 384.
+        // 2048 / 384 = 5.333. So 5 full rows.
+        // Using fixed size from server logic: THUMB_HEIGHT / ATLAS_HEIGHT
+        // 384.0 / 2048.0 = 0.1875
+        _uvH = 384.0f / 2048.0f; 
+
+        if (loadOnStart && apiManager != null)
         {
-            LoadMockData();
+            if (verboseLogging) Debug.Log("[MediaGridManager] Fetching Home...");
+            apiManager.FetchHome();
+            if (verboseLogging) Debug.Log("[MediaGridManager] Home fetched.");
         }
     }
 
-    public void LoadMockData()
+    public void OnApiResponse(DataDictionary data)
     {
-        if (mockImageUrls == null || mockImageUrls.Length == 0)
-        {
-            Debug.LogError("[MediaGridManager] No mockImageUrls defined!");
-            return;
-        }
-
-        // Use the first URL as our "Atlas"
-        VRCUrl atlasUrl = mockImageUrls[0];
-
-        // Mock 3x2 Grid of UVs
-        // Row 0 (Bottom)
-        CreateItem("Inception", "2010", atlasUrl, new Rect(0.0f, 0.0f, 0.33f, 0.5f));
-        CreateItem("The Dark Knight", "2008", atlasUrl, new Rect(0.33f, 0.0f, 0.33f, 0.5f));
-        CreateItem("Interstellar", "2014", atlasUrl, new Rect(0.66f, 0.0f, 0.33f, 0.5f));
+        if (verboseLogging) Debug.Log("[MediaGridManager] Received API Response (Manual Public Call check)");
         
-        // Row 1 (Top)
-        CreateItem("Dunkirk", "2017", atlasUrl, new Rect(0.0f, 0.5f, 0.33f, 0.5f));
-        CreateItem("Tenet", "2020", atlasUrl, new Rect(0.33f, 0.5f, 0.33f, 0.5f));
-        CreateItem("Oppenheimer", "2023", atlasUrl, new Rect(0.66f, 0.5f, 0.33f, 0.5f));
+        // Clear existing items
+        ClearItems();
 
-        // Trigger download for the atlas
-        RequestAtlas(atlasUrl);
+        if (data.ContainsKey("items"))
+        {
+            DataList items = data["items"].DataList;
+            if (verboseLogging) Debug.Log($"[MediaGridManager] Processing {items.Count} items.");
+
+            for (int i = 0; i < items.Count; i++)
+            {
+                DataDictionary item = items[i].DataDictionary;
+                
+                string title = "Unknown";
+                if (item.ContainsKey("label")) title = item["label"].String;
+
+                string subtitle = "";
+                if (item.ContainsKey("subLabel")) subtitle = item["subLabel"].String;
+
+                int imageSlotId = -1;
+                if (item.ContainsKey("slotId")) imageSlotId = (int)item["slotId"].Number;
+
+                int actionSlotId = -1;
+                if (item.ContainsKey("actionSlotId")) actionSlotId = (int)item["actionSlotId"].Number;
+                
+                // Parse atlasIndex instead of UV
+                int atlasIndex = -1;
+                if (item.ContainsKey("atlasIndex")) atlasIndex = (int)item["atlasIndex"].Number;
+                
+                if (imageSlotId >= 0 && atlasIndex >= 0)
+                {
+                    Rect uv = CalculateUV(atlasIndex);
+
+                    // Map image slot ID to VRCUrl
+                    if (imageSlotUrls != null && imageSlotUrls.Length > 0)
+                    {
+                        VRCUrl atlasUrl = imageSlotUrls[imageSlotId % imageSlotUrls.Length];
+                        CreateItem(title, subtitle, atlasUrl, uv, actionSlotId);
+                        
+                        // Queue download
+                        RequestAtlas(atlasUrl);
+                    }
+                    else
+                    {
+                        if (verboseLogging) Debug.LogError("[MediaGridManager] No imageSlotUrls configured!");
+                    }
+                }
+                else
+                {
+                     if (verboseLogging) Debug.LogWarning($"[MediaGridManager] Item {i} missing slotId or atlasIndex.");
+                }
+            }
+        }
+        else
+        {
+             if (verboseLogging) Debug.LogWarning("[MediaGridManager] Response missing 'items' list.");
+        }
+    }
+    
+    Rect CalculateUV(int index)
+    {
+        int col = index % atlasCols;
+        int row = index / atlasCols;
+
+        float x = col * _uvW;
+        
+        // Unity UV (0,0 is bottom-left)
+        // Server (0,0 is top-left)
+        // Server Top Y (pixels) = row * 384
+        // Server Bottom Y (pixels) = (row + 1) * 384
+        // Unity Y = 1.0 - (Bottom / 2048)
+        
+        float y = 1.0f - ((row + 1) * _uvH);
+
+        return new Rect(x, y, _uvW, _uvH);
     }
 
-    void CreateItem(string title, string subtitle, VRCUrl atlasUrl, Rect uv)
+    public void OnItemClicked(int actionSlotId)
+    {
+        if (verboseLogging) Debug.Log($"[MediaGridManager] Item clicked, requesting slot {actionSlotId}");
+        if (apiManager != null)
+        {
+            apiManager.FetchSlot(actionSlotId);
+        }
+    }
+
+    void ClearItems()
+    {
+        for (int i = 0; i < _itemCount; i++)
+        {
+            if (_spawnedItems[i] != null)
+            {
+                Destroy(_spawnedItems[i].gameObject);
+            }
+        }
+        _itemCount = 0;
+    }
+
+    void CreateItem(string title, string subtitle, VRCUrl atlasUrl, Rect uv, int actionSlotId)
     {
         if (itemPrefab == null || contentRoot == null) return;
         if (_itemCount >= _spawnedItems.Length) return;
@@ -91,7 +192,7 @@ public class MediaGridManager : UdonSharpBehaviour
         if (view != null)
         {
             view.SetContent(title, subtitle);
-            // Image will be set when atlas loads
+            view.SetAction(actionSlotId, this);
         }
 
         // Store state
@@ -103,8 +204,7 @@ public class MediaGridManager : UdonSharpBehaviour
 
     void RequestAtlas(VRCUrl url)
     {
-        // Check if already downloading or downloaded (not tracking downloaded yet, just simple check)
-        // For simplicity, just check active downloads
+        // Check active downloads
         for (int i = 0; i < _activeDownloadCount; i++)
         {
             if (_activeDownloadUrls[i] != null && _activeDownloadUrls[i].Equals(url))
@@ -115,12 +215,13 @@ public class MediaGridManager : UdonSharpBehaviour
 
         if (_activeDownloadCount >= _activeDownloads.Length)
         {
-            Debug.LogError("[MediaGridManager] Too many active downloads!");
+            if (verboseLogging) Debug.LogWarning("[MediaGridManager] Too many active downloads!");
             return;
         }
 
+        if (verboseLogging) Debug.Log($"[MediaGridManager] Requesting Atlas: {url}");
+
         // Start download
-        // Note: UdonBehaviour must be cast to UdonBehaviour for the callback target
         IVRCImageDownload download = _downloader.DownloadImage(url, null, (UdonBehaviour)this.GetComponent(typeof(UdonBehaviour)), null);
         
         _activeDownloads[_activeDownloadCount] = download;
@@ -130,16 +231,11 @@ public class MediaGridManager : UdonSharpBehaviour
 
     public override void OnImageLoadSuccess(IVRCImageDownload result)
     {
-        // Find which URL this was
         VRCUrl matchedUrl = null;
         int matchedIndex = -1;
 
-        // Note: result object equality check
         for (int i = 0; i < _activeDownloadCount; i++)
         {
-            // We assume result is the same object we got from DownloadImage
-            // If not, we might need another way, but usually it is.
-            // If this equality fails, we have to rely on something else or assume single download.
             if (_activeDownloads[i] == result)
             {
                 matchedUrl = _activeDownloadUrls[i];
@@ -148,15 +244,18 @@ public class MediaGridManager : UdonSharpBehaviour
             }
         }
 
-        if (matchedUrl == null)
+        if (matchedUrl == null) 
         {
-            Debug.LogWarning("[MediaGridManager] Received load success for unknown download.");
+            if (verboseLogging) Debug.LogWarning("[MediaGridManager] Unknown download success.");
             return;
         }
+        
+        if (verboseLogging) Debug.Log($"[MediaGridManager] Atlas Loaded: {matchedUrl}");
 
         Texture2D texture = result.Result;
 
         // Assign to all items that use this atlas
+        int updateCount = 0;
         for (int i = 0; i < _itemCount; i++)
         {
             if (_itemAtlasUrls[i].Equals(matchedUrl))
@@ -164,12 +263,14 @@ public class MediaGridManager : UdonSharpBehaviour
                 if (_spawnedItems[i] != null)
                 {
                     _spawnedItems[i].SetImage(texture, _itemUvs[i]);
+                    updateCount++;
                 }
             }
         }
+        
+        if (verboseLogging) Debug.Log($"[MediaGridManager] Updated {updateCount} items with new atlas.");
 
-        // Cleanup download slot
-        // (Simple array shift or replace with last)
+        // Cleanup
         _activeDownloads[matchedIndex] = _activeDownloads[_activeDownloadCount - 1];
         _activeDownloadUrls[matchedIndex] = _activeDownloadUrls[_activeDownloadCount - 1];
         _activeDownloadCount--;
@@ -177,9 +278,8 @@ public class MediaGridManager : UdonSharpBehaviour
 
     public override void OnImageLoadError(IVRCImageDownload result)
     {
-        Debug.LogError($"[MediaGridManager] Atlas download failed: {result.ErrorMessage}");
-        // Cleanup similar to Success
-        // ... (Copy paste cleanup logic or refactor)
+        Debug.LogError($"[MediaGridManager] Atlas download failed: {result.ErrorMessage}"); // ErrorMessage is correct for ImageDownload
+        // Cleanup
          for (int i = 0; i < _activeDownloadCount; i++)
         {
             if (_activeDownloads[i] == result)
@@ -189,6 +289,25 @@ public class MediaGridManager : UdonSharpBehaviour
                 _activeDownloadCount--;
                 break;
             }
+        }
+    }
+
+    // Safety Net: Forward String events if they end up here
+    public override void OnStringLoadSuccess(IVRCStringDownload result)
+    {
+        if (verboseLogging) Debug.LogWarning("[MediaGridManager] Caught String Load Event! Forwarding to APIManager.");
+        if (apiManager != null)
+        {
+            apiManager.OnStringLoadSuccess(result);
+        }
+    }
+
+    public override void OnStringLoadError(IVRCStringDownload result)
+    {
+        if (verboseLogging) Debug.LogError("[MediaGridManager] Caught String Load Error! Forwarding to APIManager.");
+        if (apiManager != null)
+        {
+            apiManager.OnStringLoadError(result);
         }
     }
 }

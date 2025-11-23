@@ -27,7 +27,7 @@ const createRouter = ({ isHealthy, vodService, plexClient, slotManager, atlasMan
 
   if (plexClient) {
     router.use('/imgs', createImageRouter({ plexClient, slotManager, atlasManager }));
-    router.use('/ui', createUiRouter({ plexClient, slotManager, atlasManager }));
+    router.use('/api/ui', createUiRouter({ plexClient, slotManager, atlasManager }));
 
     router.get(/^\/(tt\d+)$/, async (req, res, next) => {
       const imdbId = req.params[0];
