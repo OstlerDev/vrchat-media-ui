@@ -3,9 +3,7 @@ const express = require('express');
 const { createRouter } = require('./routes');
 const logger = require('./logger');
 const { env } = require('./config/env');
-const { createVodCache } = require('./services/vodCache');
-const { createJitEncoder } = require('./services/JITencoder');
-const { createHybridVod } = require('./services/hybridVod');
+const { createVodService } = require('./services/vodService');
 const { createPlexClient } = require('./lib/plexClient');
 const { createSlotManager } = require('./services/slotManager');
 
@@ -40,22 +38,15 @@ app.use((req, res, next) => {
 
 const plexClient = createPlexClient({ env, logger });
 const slotManager = createSlotManager();
-const providerType = env.providerType || 'VOD_CACHE';
-const shouldInitVodCache = providerType === 'VOD_CACHE' || providerType === 'HYBRID';
-const vodCache = shouldInitVodCache ? createVodCache({ env, logger }) : null;
-const jitEncoder = providerType === 'JIT_ENCODER' ? createJitEncoder({ env, logger }) : null;
-const hybridVod =
-  providerType === 'HYBRID' && vodCache
-    ? createHybridVod({ env, logger, vodCache })
-    : null;
+
+const vodService = createVodService({ env, logger });
+
 let isOnline = false;
 
 app.use(
   createRouter({
     isHealthy: () => isOnline,
-    vodCache,
-    jitEncoder,
-    hybridVod,
+    vodService,
     plexClient,
     slotManager,
   }),
@@ -68,14 +59,8 @@ const server = app.listen(PORT, () => {
 
 const shutdown = async () => {
   try {
-    if (vodCache && typeof vodCache.shutdown === 'function') {
-      await vodCache.shutdown();
-    }
-    if (jitEncoder && typeof jitEncoder.shutdown === 'function') {
-      await jitEncoder.shutdown();
-    }
-    if (hybridVod && typeof hybridVod.shutdown === 'function') {
-      await hybridVod.shutdown();
+    if (vodService && typeof vodService.shutdown === 'function') {
+      await vodService.shutdown();
     }
   } catch (err) {
     logger.error({ err }, 'Failed to shutdown stream manager');

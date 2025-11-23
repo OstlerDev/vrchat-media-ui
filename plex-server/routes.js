@@ -5,7 +5,7 @@ const { createImageRouter } = require('./routes/images');
 const { createUiRouter } = require('./routes/ui');
 const logger = require('./logger');
 
-const createRouter = ({ isHealthy, vodCache, jitEncoder, hybridVod, plexClient, slotManager }) => {
+const createRouter = ({ isHealthy, vodService, plexClient, slotManager }) => {
   if (typeof isHealthy !== 'function') {
     throw new TypeError('isHealthy must be a function');
   }
@@ -33,7 +33,7 @@ const createRouter = ({ isHealthy, vodCache, jitEncoder, hybridVod, plexClient, 
     process.exit(-1)
   }
 
-  router.use(createStreamingRouter({ vodCache, jitEncoder, hybridVod }));
+  router.use(createStreamingRouter({ vodService }));
 
   router.use((req, res) => {
     logger.warn({ method: req.method, url: req.url, ip: req.ip }, '404 Not Found');
