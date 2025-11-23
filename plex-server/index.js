@@ -6,6 +6,7 @@ const { env } = require('./config/env');
 const { createVodService } = require('./services/vodService');
 const { createPlexClient } = require('./lib/plexClient');
 const { createSlotManager } = require('./services/slotManager');
+const { createAtlasManager } = require('./services/atlasService');
 
 const PORT = env.port;
 const app = express();
@@ -38,6 +39,7 @@ app.use((req, res, next) => {
 
 const plexClient = createPlexClient({ env, logger });
 const slotManager = createSlotManager();
+const atlasManager = createAtlasManager({ plexClient, slotManager });
 
 // Initial cache population
 plexClient.refreshCache().catch(err => 
@@ -54,6 +56,7 @@ app.use(
     vodService,
     plexClient,
     slotManager,
+    atlasManager,
   }),
 );
 

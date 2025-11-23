@@ -5,7 +5,7 @@ const { createImageRouter } = require('./routes/images');
 const { createUiRouter } = require('./routes/ui');
 const logger = require('./logger');
 
-const createRouter = ({ isHealthy, vodService, plexClient, slotManager }) => {
+const createRouter = ({ isHealthy, vodService, plexClient, slotManager, atlasManager }) => {
   if (typeof isHealthy !== 'function') {
     throw new TypeError('isHealthy must be a function');
   }
@@ -26,8 +26,8 @@ const createRouter = ({ isHealthy, vodService, plexClient, slotManager }) => {
   });
 
   if (plexClient) {
-    router.use('/imgs', createImageRouter({ plexClient, slotManager }));
-    router.use('/ui', createUiRouter({ plexClient, slotManager }));
+    router.use('/imgs', createImageRouter({ plexClient, slotManager, atlasManager }));
+    router.use('/ui', createUiRouter({ plexClient, slotManager, atlasManager }));
 
     router.get(/^\/(tt\d+)$/, async (req, res, next) => {
       const imdbId = req.params[0];

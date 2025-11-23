@@ -2,7 +2,7 @@
 const express = require('express');
 const logger = require('../logger');
 
-const createUiRouter = ({ plexClient, slotManager }) => {
+const createUiRouter = ({ plexClient, slotManager, atlasManager }) => {
   const router = express.Router();
 
   router.get('/', async (req, res) => {
@@ -41,19 +41,28 @@ const createUiRouter = ({ plexClient, slotManager }) => {
     // Fetch Recently Added from Plex
     const recentItems = await plexClient.getRecentlyAdded();
 
-    // Transform to UI Items
-    const items = recentItems.map(meta => {
-      // Assign a slot to this item
-      const slotId = slotManager.assignSlot(meta.ratingKey);
+    // Prepare items for atlas generation
+    const atlasInputs = recentItems.map(meta => ({
+      ratingKey: meta.ratingKey,
+      thumb: meta.thumb,
+      // Keep metadata we need for final response
+      _meta: meta
+    }));
 
+    // Generate atlases (this returns items with slotId and uv)
+    const enrichedItems = await atlasManager.generateAtlases(atlasInputs);
+
+    // Transform to UI Items
+    const items = enrichedItems.map(item => {
+      const meta = item._meta;
+      
       return {
         id: meta.ratingKey,
-        slotId: slotId,
+        slotId: item.slotId,
+        uv: item.uv,
         label: meta.title,
         subLabel: (meta.year || '') + (meta.type ? ` · ${meta.type}` : ''),
-        // The client will likely ignore 'thumb' if it uses the slot system strictly,
-        // but we provide the slot-based URL just in case.
-        thumb: `/imgs/slots/${slotId}`, 
+        thumb: `/imgs/slots/${item.slotId}`, // Points to the atlas
         route: `/item/${meta.ratingKey}`,
         action: 'navigate'
       };

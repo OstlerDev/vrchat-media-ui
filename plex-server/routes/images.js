@@ -2,7 +2,7 @@
 const express = require('express');
 const logger = require('../logger');
 
-const createImageRouter = ({ plexClient, slotManager }) => {
+const createImageRouter = ({ plexClient, slotManager, atlasManager }) => {
   const router = express.Router();
 
   // Slot-based image handler
@@ -16,6 +16,19 @@ const createImageRouter = ({ plexClient, slotManager }) => {
 
     if (!plexId) {
       res.status(404).send('Slot is empty or expired');
+      return;
+    }
+
+    // Check if this is an atlas request
+    if (plexId.startsWith('atlas_') && atlasManager) {
+      const buffer = atlasManager.getAtlas(plexId);
+      if (!buffer) {
+        res.status(404).send('Atlas not found or expired');
+        return;
+      }
+      
+      res.set('Content-Type', 'image/jpeg');
+      res.send(buffer);
       return;
     }
 
