@@ -28,6 +28,22 @@ const createRouter = ({ isHealthy, vodService, plexClient, slotManager }) => {
   if (plexClient) {
     router.use('/imgs', createImageRouter({ plexClient, slotManager }));
     router.use('/ui', createUiRouter({ plexClient, slotManager }));
+
+    router.get(/^\/(tt\d+)$/, async (req, res, next) => {
+      const imdbId = req.params[0];
+      try {
+        const media = await plexClient.findByImdbId(imdbId);
+        if (!media) {
+          return res.status(404).send('Media not found');
+        }
+        const playlist = await vodService.getPlaylist(media.ratingKey);
+        res.setHeader('Cache-Control', 'no-store');
+        res.type('application/vnd.apple.mpegurl').send(playlist);
+      } catch (err) {
+        logger.error({ err, imdbId }, 'Failed to handle IMDb request');
+        next(err);
+      }
+    });
   } else {
     logger.error('Plex client not provided');
     process.exit(-1)

@@ -10,7 +10,10 @@ const createPlexClient = ({ env, logger }) => {
     baseURL: env.plexBaseUrl,
     timeout: 15_000,
     params: { 'X-Plex-Token': env.plexToken },
+    headers: { 'Accept': 'application/json' }
   });
+
+  const imdbCache = new Map();
 
   const normalizeUrl = (maybeAbsolute) => {
     if (!maybeAbsolute) {
@@ -121,13 +124,65 @@ const createPlexClient = ({ env, logger }) => {
     }
  };
 
+  const refreshCache = async () => {
+    logger.info('Refreshing Plex IMDb cache...');
+    try {
+      const { data: sectionsData } = await http.get('/library/sections');
+      const sections = sectionsData?.MediaContainer?.Directory || [];
+
+      for (const section of sections) {
+        if (section.type !== 'movie' && section.type !== 'show') continue;
+
+        try {
+          // includeGuids=1 is required to get external IDs (IMDb, TMDB, etc.)
+          const { data: itemsData } = await http.get(`/library/sections/${section.key}/all`, {
+            params: { includeGuids: 1 }
+          });
+          const items = itemsData?.MediaContainer?.Metadata || [];
+          
+          for (const item of items) {
+            if (item.Guid) {
+              for (const guid of item.Guid) {
+                if (guid.id && guid.id.startsWith('imdb://')) {
+                  const imdbId = guid.id.replace('imdb://', '');
+                  imdbCache.set(imdbId, item);
+                }
+              }
+            }
+          }
+        } catch (err) {
+          logger.warn({ err, section: section.title }, 'Failed to fetch items for section during cache refresh');
+        }
+      }
+      logger.info({ count: imdbCache.size }, 'Plex IMDb cache refreshed');
+    } catch (error) {
+      logger.error({ err: error }, 'Failed to refresh Plex cache');
+    }
+  };
+
+  const findByImdbId = async (imdbId) => {
+    if (imdbCache.has(imdbId)) {
+      return imdbCache.get(imdbId);
+    }
+
+    const results = await search(imdbId);
+    return results.find((item) => {
+      if (item.Guid) {
+        return item.Guid.some((g) => g.id === `imdb://${imdbId}`);
+      }
+      return item.guid && item.guid.includes(imdbId);
+    });
+  };
+
   return {
     getMetadata,
     getPrimaryPartStreamUrl,
     getAssetStream,
     getTranscodedImage,
     search,
+    findByImdbId,
     getRecentlyAdded,
+    refreshCache,
   };
 };
 

@@ -39,6 +39,11 @@ app.use((req, res, next) => {
 const plexClient = createPlexClient({ env, logger });
 const slotManager = createSlotManager();
 
+// Initial cache population
+plexClient.refreshCache().catch(err => 
+  logger.error({ err }, 'Failed to populate Plex cache on startup')
+);
+
 const vodService = createVodService({ env, logger });
 
 let isOnline = false;
