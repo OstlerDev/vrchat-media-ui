@@ -29,6 +29,7 @@ const env = {
   port: parseNumber(process.env.PORT, 4000),
   plexBaseUrl: getRequired('PLEX_BASE_URL').replace(/\/+$/, ''),
   plexToken: getRequired('PLEX_TOKEN'),
+  tmdbApiReadToken: process.env.TMDB_API_READ_TOKEN,
   ffmpegPath: process.env.FFMPEG_PATH || ffmpegInstaller.path,
   ffmpegLogLevel: process.env.FFMPEG_LOG_LEVEL || 'error',
   ffmpegPreset: process.env.FFMPEG_PRESET || 'veryfast',

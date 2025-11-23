@@ -58,7 +58,7 @@ const createPlexClient = ({ env, logger }) => {
   const getRecentlyAdded = async () => {
     try {
       const { data } = await http.get('/library/recentlyAdded', {
-        params: { limit: 30 }
+        params: { limit: 30, includeGuids: 1 }
       });
       return data?.MediaContainer?.Metadata || [];
     } catch (error) {
@@ -165,13 +165,19 @@ const createPlexClient = ({ env, logger }) => {
       return imdbCache.get(imdbId);
     }
 
-    const results = await search(imdbId);
-    return results.find((item) => {
+    const checkResults = (items) => items.find((item) => {
       if (item.Guid) {
         return item.Guid.some((g) => g.id === `imdb://${imdbId}`);
       }
       return item.guid && item.guid.includes(imdbId);
     });
+
+    let results = await search(imdbId);
+    let match = checkResults(results);
+
+    if (match) return match;
+
+    return undefined;
   };
 
   return {
