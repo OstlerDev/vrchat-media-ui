@@ -13,6 +13,7 @@ public class APIManager : UdonSharpBehaviour
     public VRCUrl homeUrl;
     public VRCUrl[] slotUrls; // API Slots: /api/ui/slots/0...
     public VRCUrl[] imageSlotUrls; // Image Slots: /imgs/slots/0...
+    public VRCUrl[] streamSlotUrls; // Stream Slots: /stream/slots/0...
 
     [Header("Screens")]
     public GameObject gridScreen;
@@ -151,5 +152,11 @@ public class APIManager : UdonSharpBehaviour
     {
         if (imageSlotUrls == null || imageSlotUrls.Length == 0) return null;
         return imageSlotUrls[slotId % imageSlotUrls.Length];
+    }
+
+    public VRCUrl GetStreamSlotUrl(int slotId)
+    {
+        if (streamSlotUrls == null || streamSlotUrls.Length == 0) return null;
+        return streamSlotUrls[slotId % streamSlotUrls.Length];
     }
 }

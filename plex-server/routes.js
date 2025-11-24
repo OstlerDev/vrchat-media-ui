@@ -49,7 +49,7 @@ const createRouter = ({ isHealthy, vodService, plexClient, slotManager, atlasMan
     process.exit(-1)
   }
 
-  router.use(createStreamingRouter({ vodService }));
+  router.use(createStreamingRouter({ vodService, slotManager }));
 
   router.use((req, res) => {
     logger.warn({ method: req.method, url: req.url, ip: req.ip }, '404 Not Found');

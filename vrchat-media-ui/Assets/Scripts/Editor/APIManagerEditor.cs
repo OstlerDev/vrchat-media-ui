@@ -22,7 +22,7 @@ public class APIManagerEditor : Editor
         string serviceUrl = EditorGUILayout.TextField("Service URL", "http://localhost:4000");
         int slotCount = EditorGUILayout.IntField("Slot Count", 100);
         
-        if (GUILayout.Button("Generate All URLs (API & Images)"))
+        if (GUILayout.Button("Generate URLs"))
         {
             GenerateAllUrls(manager, serviceUrl, slotCount);
         }
@@ -59,8 +59,17 @@ public class APIManagerEditor : Editor
             imgUrls.Add(new VRCUrl(url));
         }
         manager.imageSlotUrls = imgUrls.ToArray();
+
+        // 4. Generate Stream Slot URLs
+        List<VRCUrl> streamUrls = new List<VRCUrl>();
+        for (int i = 0; i < count; i++)
+        {
+            string url = $"{baseService}/stream/slots/{i}/index.m3u8";
+            streamUrls.Add(new VRCUrl(url));
+        }
+        manager.streamSlotUrls = streamUrls.ToArray();
         
         EditorUtility.SetDirty(manager);
-        Debug.Log($"Generated Home URL, {apiUrls.Count} API slots, and {imgUrls.Count} Image slots.");
+        Debug.Log($"Generated Home URL, {apiUrls.Count} API slots, {imgUrls.Count} Image slots, and {streamUrls.Count} Stream slots.");
     }
 }
