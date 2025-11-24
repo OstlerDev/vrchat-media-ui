@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3571640266878160609}
   - component: {fileID: 1873456229423738972}
   - component: {fileID: 4679721611449661486}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: MediaGridManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -30,6 +30,9 @@ const createUiRouter = ({ plexClient, slotManager, atlasManager }) => {
         const metadata = await plexClient.getMetadata(ratingKey);
         
         // Return Details View
+        // Assign slot for the image
+        const imageSlotId = slotManager.assignSlot(metadata.ratingKey);
+
         res.json({
           schema: "vrc-media-ui",
           version: 1,
@@ -37,6 +40,7 @@ const createUiRouter = ({ plexClient, slotManager, atlasManager }) => {
           title: metadata.title,
           subtitle: metadata.year ? String(metadata.year) : "",
           description: metadata.summary,
+          imageSlotId: imageSlotId,
           // You might want to assign a slot for the background/poster here too if needed for details view
           // For now, let's just return text data
           metadata: {

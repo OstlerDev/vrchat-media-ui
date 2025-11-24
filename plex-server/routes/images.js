@@ -42,7 +42,7 @@ const createImageRouter = ({ plexClient, slotManager, atlasManager }) => {
       }
 
       // Resize to VRChat-safe dimensions (512x768)
-      const response = await plexClient.getTranscodedImage(thumb, 128, 192);
+      const response = await plexClient.getTranscodedImage(thumb, 512, 768);
       
       res.set('Content-Type', response.headers['content-type']);
       response.data.pipe(res);

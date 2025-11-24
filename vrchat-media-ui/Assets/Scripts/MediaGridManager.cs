@@ -173,7 +173,10 @@ public class MediaGridManager : UdonSharpBehaviour
         newItem.transform.localScale = Vector3.one;
         newItem.transform.localPosition = Vector3.zero;
         
+        // Try to find the view component on the root or children
         MediaItemView view = newItem.GetComponent<MediaItemView>();
+        if (view == null) view = newItem.GetComponentInChildren<MediaItemView>();
+
         if (view != null)
         {
             view.SetContent(title, subtitle);

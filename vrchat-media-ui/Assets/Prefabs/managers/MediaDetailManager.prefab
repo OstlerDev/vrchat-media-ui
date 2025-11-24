@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2889366302534277552}
   - component: {fileID: 3461874633279261604}
   - component: {fileID: 3411254781292206911}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: MediaDetailManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -58,6 +58,7 @@ MonoBehaviour:
   titleText: {fileID: 0}
   subtitleText: {fileID: 0}
   descriptionText: {fileID: 0}
+  posterImage: {fileID: 0}
   apiManager: {fileID: 2135439260653667804, guid: 00c312deea3c265478d546df5bfc7e4d,
     type: 3}
 --- !u!114 &3411254781292206911
