@@ -3,7 +3,7 @@ using UdonSharp;
 using UnityEngine;
 using VRC.SDKBase;
 using VRC.SDK3.Image;
-using VRC.SDK3.StringLoading; // Added namespace
+using VRC.SDK3.StringLoading;
 using VRC.SDK3.Data;
 using VRC.Udon;
 
@@ -14,18 +14,14 @@ public class MediaGridManager : UdonSharpBehaviour
     public Transform contentRoot;
     public APIManager apiManager;
     
-    [Header("Generator Settings")]
-    public string[] serviceUrls = new string[] { "http://localhost:4000" };
-    public string urlPattern = "/imgs/slots/{0}.jpg";
-    public int slotsPerService = 100;
-
+    // Removed local generator settings as they are now in APIManagerEditor
+    
     [Header("Atlas Settings")]
     // These must match the server constants (2048x2048 atlas, 256x384 thumbs)
     public int atlasCols = 8;
-    public int atlasRows = 5; // Server might produce fewer rows if fewer items, but layout is fixed
+    public int atlasRows = 5; 
 
-    [Header("Data Source")]
-    public VRCUrl[] imageSlotUrls; // Pool of URLs pointing to /imgs/slots/0 ... /imgs/slots/N
+    // Removed local imageSlotUrls as we fetch from APIManager
 
     [Header("Debug")]
     public bool loadOnStart = true;
@@ -59,15 +55,7 @@ public class MediaGridManager : UdonSharpBehaviour
         _activeDownloadUrls = new VRCUrl[10];
         _activeDownloadCount = 0;
 
-        // Calculate normalized width/height for UVs
-        // Server uses 256x384 on 2048x2048
-        // 256/2048 = 0.125
-        // 384/2048 = 0.1875
         _uvW = 1.0f / (float)atlasCols;
-        // Note: Rows is tricky because server fits into 2048 but uses 384.
-        // 2048 / 384 = 5.333. So 5 full rows.
-        // Using fixed size from server logic: THUMB_HEIGHT / ATLAS_HEIGHT
-        // 384.0 / 2048.0 = 0.1875
         _uvH = 384.0f / 2048.0f; 
 
         if (loadOnStart && apiManager != null)
@@ -106,7 +94,6 @@ public class MediaGridManager : UdonSharpBehaviour
                 int actionSlotId = -1;
                 if (item.ContainsKey("actionSlotId")) actionSlotId = (int)item["actionSlotId"].Number;
                 
-                // Parse atlasIndex instead of UV
                 int atlasIndex = -1;
                 if (item.ContainsKey("atlasIndex")) atlasIndex = (int)item["atlasIndex"].Number;
                 
@@ -114,18 +101,23 @@ public class MediaGridManager : UdonSharpBehaviour
                 {
                     Rect uv = CalculateUV(atlasIndex);
 
-                    // Map image slot ID to VRCUrl
-                    if (imageSlotUrls != null && imageSlotUrls.Length > 0)
+                    // Fetch URL from APIManager instead of local array
+                    if (apiManager != null)
                     {
-                        VRCUrl atlasUrl = imageSlotUrls[imageSlotId % imageSlotUrls.Length];
-                        CreateItem(title, subtitle, atlasUrl, uv, actionSlotId);
-                        
-                        // Queue download
-                        RequestAtlas(atlasUrl);
+                        VRCUrl atlasUrl = apiManager.GetImageSlotUrl(imageSlotId);
+                        if (atlasUrl != null)
+                        {
+                            CreateItem(title, subtitle, atlasUrl, uv, actionSlotId);
+                            RequestAtlas(atlasUrl);
+                        }
+                        else
+                        {
+                             if (verboseLogging) Debug.LogError($"[MediaGridManager] APIManager returned null URL for slot {imageSlotId}");
+                        }
                     }
                     else
                     {
-                        if (verboseLogging) Debug.LogError("[MediaGridManager] No imageSlotUrls configured!");
+                        if (verboseLogging) Debug.LogError("[MediaGridManager] APIManager reference missing!");
                     }
                 }
                 else
@@ -146,13 +138,6 @@ public class MediaGridManager : UdonSharpBehaviour
         int row = index / atlasCols;
 
         float x = col * _uvW;
-        
-        // Unity UV (0,0 is bottom-left)
-        // Server (0,0 is top-left)
-        // Server Top Y (pixels) = row * 384
-        // Server Bottom Y (pixels) = (row + 1) * 384
-        // Unity Y = 1.0 - (Bottom / 2048)
-        
         float y = 1.0f - ((row + 1) * _uvH);
 
         return new Rect(x, y, _uvW, _uvH);
@@ -204,12 +189,11 @@ public class MediaGridManager : UdonSharpBehaviour
 
     void RequestAtlas(VRCUrl url)
     {
-        // Check active downloads
         for (int i = 0; i < _activeDownloadCount; i++)
         {
             if (_activeDownloadUrls[i] != null && _activeDownloadUrls[i].Equals(url))
             {
-                return; // Already in progress
+                return; 
             }
         }
 
@@ -221,7 +205,6 @@ public class MediaGridManager : UdonSharpBehaviour
 
         if (verboseLogging) Debug.Log($"[MediaGridManager] Requesting Atlas: {url}");
 
-        // Start download
         IVRCImageDownload download = _downloader.DownloadImage(url, null, (UdonBehaviour)this.GetComponent(typeof(UdonBehaviour)), null);
         
         _activeDownloads[_activeDownloadCount] = download;
@@ -254,7 +237,6 @@ public class MediaGridManager : UdonSharpBehaviour
 
         Texture2D texture = result.Result;
 
-        // Assign to all items that use this atlas
         int updateCount = 0;
         for (int i = 0; i < _itemCount; i++)
         {
@@ -270,7 +252,6 @@ public class MediaGridManager : UdonSharpBehaviour
         
         if (verboseLogging) Debug.Log($"[MediaGridManager] Updated {updateCount} items with new atlas.");
 
-        // Cleanup
         _activeDownloads[matchedIndex] = _activeDownloads[_activeDownloadCount - 1];
         _activeDownloadUrls[matchedIndex] = _activeDownloadUrls[_activeDownloadCount - 1];
         _activeDownloadCount--;
@@ -278,8 +259,8 @@ public class MediaGridManager : UdonSharpBehaviour
 
     public override void OnImageLoadError(IVRCImageDownload result)
     {
-        Debug.LogError($"[MediaGridManager] Atlas download failed: {result.ErrorMessage}"); // ErrorMessage is correct for ImageDownload
-        // Cleanup
+        Debug.LogError($"[MediaGridManager] Atlas download failed: {result.ErrorMessage}");
+        
          for (int i = 0; i < _activeDownloadCount; i++)
         {
             if (_activeDownloads[i] == result)
@@ -292,7 +273,6 @@ public class MediaGridManager : UdonSharpBehaviour
         }
     }
 
-    // Safety Net: Forward String events if they end up here
     public override void OnStringLoadSuccess(IVRCStringDownload result)
     {
         if (verboseLogging) Debug.LogWarning("[MediaGridManager] Caught String Load Event! Forwarding to APIManager.");

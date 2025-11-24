@@ -11,10 +11,12 @@ public class APIManager : UdonSharpBehaviour
 {
     [Header("Endpoints")]
     public VRCUrl homeUrl;
-    public VRCUrl[] slotUrls; // Populate this in Inspector with /api/ui/slots/0 ... /api/ui/slots/99
+    public VRCUrl[] slotUrls; // API Slots: /api/ui/slots/0...
+    public VRCUrl[] imageSlotUrls; // Image Slots: /imgs/slots/0...
 
-    [Header("References")]
+    [Header("Screens")]
     public MediaGridManager gridManager;
+    public MediaDetailManager detailManager;
 
     // We can track what we requested to know how to handle the response
     // 0 = Home, 1 = Slot
@@ -60,17 +62,15 @@ public class APIManager : UdonSharpBehaviour
         // Parse JSON using VRCJson
         if (VRCJson.TryDeserializeFromJson(json, out DataToken data))
         {
-            Debug.Log("[APIManager] parsed JSON response");
             if (data.TokenType == TokenType.DataDictionary)
             {
-                Debug.Log("[APIManager] data dictionary found");
                 DataDictionary dict = data.DataDictionary;
                 
                 // Check for errors
                 if (dict.ContainsKey("screenType"))
                 {
-                    Debug.Log("[APIManager] screen type found");
                     string screenType = dict["screenType"].String;
+                    Debug.Log($"[APIManager] Screen Type: {screenType}");
                     
                     if (screenType == "error")
                     {
@@ -78,21 +78,12 @@ public class APIManager : UdonSharpBehaviour
                         return;
                     }
 
-                    // Dispatch to Grid Manager
-                    if (gridManager != null)
-                    {
-                        Debug.Log("[APIManager] dispatching to grid manager");
-                        gridManager.OnApiResponse(dict);
-                    }
+                    RouteResponse(screenType, dict);
                 }
                 else
                 {
                     Debug.Log("[APIManager] no screen type found");
                 }
-            }
-            else
-            {
-                Debug.Log("[APIManager] no data dictionary found");
             }
         }
         else
@@ -101,8 +92,37 @@ public class APIManager : UdonSharpBehaviour
         }
     }
 
+    void RouteResponse(string screenType, DataDictionary data)
+    {
+        // Simple Routing Logic: Toggle visibility based on screen type
+        if (screenType == "grid" || screenType == "home")
+        {
+            if (gridManager != null)
+            {
+                gridManager.gameObject.SetActive(true);
+                gridManager.OnApiResponse(data);
+            }
+            if (detailManager != null) detailManager.Hide();
+        }
+        else if (screenType == "details")
+        {
+            if (detailManager != null)
+            {
+                detailManager.gameObject.SetActive(true);
+                detailManager.OnApiResponse(data);
+            }
+            if (gridManager != null) gridManager.gameObject.SetActive(false);
+        }
+    }
+
     public override void OnStringLoadError(IVRCStringDownload result)
     {
         Debug.LogError($"[APIManager] Download failed (Type: {_lastRequestType}): {result.Error}");
+    }
+    
+    public VRCUrl GetImageSlotUrl(int slotId)
+    {
+        if (imageSlotUrls == null || imageSlotUrls.Length == 0) return null;
+        return imageSlotUrls[slotId % imageSlotUrls.Length];
     }
 }
