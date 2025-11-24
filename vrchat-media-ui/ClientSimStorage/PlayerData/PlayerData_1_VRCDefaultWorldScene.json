@@ -1,0 +1,18 @@
+{
+  "VVMW:VVMW (Separated Controls):Volume": {
+    "LastUpdated": "2025-11-23T21:39:30.3158321-07:00",
+    "Key": "VVMW:VVMW (Separated Controls):Volume",
+    "Value": {
+      "type": "Float",
+      "value": 0.5
+    }
+  },
+  "VVMW:VVMW (Separated Controls):Muted": {
+    "LastUpdated": "2025-11-23T21:39:30.8925026-07:00",
+    "Key": "VVMW:VVMW (Separated Controls):Muted",
+    "Value": {
+      "type": "Bool",
+      "value": false
+    }
+  }
+}
