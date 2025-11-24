@@ -162,6 +162,95 @@ class AtlasManager {
     });
   }
 
+  /**
+   * Generates a single combined atlas for a detail view (Poster + Backdrop)
+   * Layout:
+   * Total Size: 1536 x 768
+   * Poster: 512x768 at (0,0)
+   * Backdrop: 1024x576 at (512,0) (Top aligned)
+   */
+  async generateDetailsAtlas(posterPath, backdropPath) {
+    const ATLAS_W = 1536;
+    const ATLAS_H = 768;
+    
+    const POSTER_W = 512;
+    const POSTER_H = 768;
+    
+    const BACK_W = 1024;
+    const BACK_H = 576;
+    
+    const atlasId = this.nextAtlasId++;
+    const slotId = this.slotManager.assignSlot(`atlas_${atlasId}`);
+
+    try {
+        // Fetch Poster
+        const posterStream = await this.plexClient.getTranscodedImage(posterPath, POSTER_W, POSTER_H);
+        const posterBuffer = await this.streamToBuffer(posterStream.data);
+        const posterResized = await sharp(posterBuffer)
+             .resize(POSTER_W, POSTER_H, { fit: 'cover' })
+             .toBuffer();
+
+        // Fetch Backdrop
+        let backdropResized;
+        if (backdropPath) {
+             const backdropStream = await this.plexClient.getTranscodedImage(backdropPath, BACK_W, BACK_H);
+             const backdropBuffer = await this.streamToBuffer(backdropStream.data);
+             backdropResized = await sharp(backdropBuffer)
+                .resize(BACK_W, BACK_H, { fit: 'cover' })
+                .toBuffer();
+        } else {
+            // Fallback if no backdrop (black or transparent)
+             backdropResized = await sharp({
+                create: { width: BACK_W, height: BACK_H, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 255 } }
+             }).jpeg().toBuffer();
+        }
+
+        const compositeOps = [
+            { input: posterResized, top: 0, left: 0 },
+            { input: backdropResized, top: 0, left: POSTER_W }
+        ];
+
+        const finalBuffer = await sharp({
+            create: {
+              width: ATLAS_W,
+              height: ATLAS_H,
+              channels: 4,
+              background: { r: 0, g: 0, b: 0, alpha: 255 }
+            }
+          })
+          .composite(compositeOps)
+          .jpeg({ quality: 85 })
+          .toBuffer();
+
+        this.atlases.set(`atlas_${atlasId}`, finalBuffer);
+
+        // Calculate UVs
+        // Poster (0, 0, 512, 768)
+        // Unity Y is flipped.
+        // Poster is full height, so y=0, h=1.
+        // x = 0, w = 512/1536 = 0.333333
+        const posterUV = { x: 0, y: 0, w: POSTER_W / ATLAS_W, h: 1 };
+
+        // Backdrop (512, 0, 1024, 576) (top aligned)
+        // x = 512/1536 = 0.333333
+        // w = 1024/1536 = 0.666666
+        // Bottom of image in pixels = 768 (total h) - 576 (img h) - 0 (top) = 192 (Wait, top is 0, so bottom is H - imgH)
+        // y (start) = 192 / 768 = 0.25
+        // h = 576 / 768 = 0.75
+        const backdropUV = { x: POSTER_W / ATLAS_W, y: (ATLAS_H - BACK_H) / ATLAS_H, w: BACK_W / ATLAS_W, h: BACK_H / ATLAS_H };
+        
+        return {
+            slotId,
+            posterUV,
+            backdropUV
+        };
+
+    } catch (err) {
+        logger.error({ err }, 'Failed to generate details atlas');
+        throw err;
+    }
+  }
+
   getAtlas(atlasId) {
     return this.atlases.get(atlasId);
   }
@@ -170,4 +259,3 @@ class AtlasManager {
 const createAtlasManager = (opts) => new AtlasManager(opts);
 
 module.exports = { createAtlasManager };
-

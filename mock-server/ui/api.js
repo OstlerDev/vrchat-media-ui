@@ -1,5 +1,4 @@
 
-
 class UI {
     constructor() {
 
@@ -164,16 +163,16 @@ class UI {
             "screenType": "list",
             "title": "Seasons",
             "items": [
-              {
-                "id": "season-1",
-                "label": "Season 1",
-                "subLabel": "10 episodes",
-                "thumb": "/imgs/tv/12345/season/1/poster.jpg",
-                "badge": null,
-                "route": "/tv/12345/season/1",
-                "primaryAction": "navigate",
-                "stream": null
-              }
+                {
+                    "id": "season-1",
+                    "label": "Season 1",
+                    "subLabel": "10 episodes",
+                    "thumb": "/imgs/tv/12345/season/1/poster.jpg",
+                    "badge": null,
+                    "route": "/tv/12345/season/1",
+                    "primaryAction": "navigate",
+                    "stream": null
+                }
             ]
         })
     }
@@ -184,32 +183,17 @@ class UI {
             "version": 1,
             "screenType": "details",
             "title": "Inception",
-            "item": {
-              "id": "12345",
-              "label": "Inception",
-              "subLabel": "2010 · 2h 28m",
-              "thumb": "/imgs/movies/12345/poster.jpg",
-              "description": "A thief who steals corporate secrets...",
-              "background": "/imgs/movies/12345/background.jpg",
-              "actions": [
-                {
-                  "label": "Play",
-                  "action": "play",
-                  "stream": "/stream/movies/12345.m3u8"
-                }
-              ]
-            },
-            "extraRows": [
-              {
-                "title": "More Like This",
-                "layout": "row",
-                "items": [ 
-                    this.randomItem("navigate"),  
-                    this.randomItem("navigate"),  
-                    this.randomItem("navigate")
-                ]
-              }
-            ]
+            "subtitle": "2010",
+            "description": "A thief who steals corporate secrets...",
+            "atlasSlotId": 1,
+            "posterUV": { "x": 0, "y": 0, "w": 0.3333, "h": 1 },
+            "backdropUV": { "x": 0.3333, "y": 0.25, "w": 0.6667, "h": 0.75 },
+            "streamSlotId": 2,
+            "metadata": {
+                "ratingKey": "12345",
+                "type": "movie",
+                "duration": 8880000
+            }
         })        
     }
 

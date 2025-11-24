@@ -12,11 +12,17 @@ const createImageRouter = ({ plexClient, slotManager, atlasManager }) => {
     const slotIdRaw = req.params.slotId;
     const slotId = slotIdRaw.split('.')[0];
 
-    const plexId = slotManager.getPlexId(slotId);
+    let plexId = slotManager.getPlexId(slotId);
 
     if (!plexId) {
       res.status(404).send('Slot is empty or expired');
       return;
+    }
+
+    let isBackdrop = false;
+    if (plexId.startsWith('backdrop:')) {
+      isBackdrop = true;
+      plexId = plexId.replace('backdrop:', '');
     }
 
     // Check if this is an atlas request
@@ -34,15 +40,20 @@ const createImageRouter = ({ plexClient, slotManager, atlasManager }) => {
 
     try {
       const metadata = await plexClient.getMetadata(plexId);
-      const thumb = metadata.thumb;
+      const imagePath = isBackdrop ? metadata.art : metadata.thumb;
 
-      if (!thumb) {
-        res.status(404).send('Media has no thumbnail');
+      if (!imagePath) {
+        res.status(404).send('Media has no image of requested type');
         return;
       }
 
-      // Resize to VRChat-safe dimensions (512x768)
-      const response = await plexClient.getTranscodedImage(thumb, 512, 768);
+      // Resize to VRChat-safe dimensions
+      // Poster: 512x768 (2:3)
+      // Backdrop: 1024x576 (16:9)
+      const width = isBackdrop ? 1024 : 512;
+      const height = isBackdrop ? 576 : 768;
+
+      const response = await plexClient.getTranscodedImage(imagePath, width, height);
       
       res.set('Content-Type', response.headers['content-type']);
       response.data.pipe(res);

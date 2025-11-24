@@ -30,8 +30,12 @@ const createUiRouter = ({ plexClient, slotManager, atlasManager }) => {
         const metadata = await plexClient.getMetadata(ratingKey);
         
         // Return Details View
-        // Assign slot for the image
-        const imageSlotId = slotManager.assignSlot(metadata.ratingKey);
+        // Generate Combined Atlas
+        const { slotId: atlasSlotId, posterUV, backdropUV } = await atlasManager.generateDetailsAtlas(
+            metadata.thumb, 
+            metadata.art
+        );
+
         // Assign slot for the stream
         const streamSlotId = slotManager.assignSlot(`stream:${metadata.ratingKey}`);
 
@@ -42,10 +46,10 @@ const createUiRouter = ({ plexClient, slotManager, atlasManager }) => {
           title: metadata.title,
           subtitle: metadata.year ? String(metadata.year) : "",
           description: metadata.summary,
-          imageSlotId: imageSlotId,
+          atlasSlotId: atlasSlotId,
+          posterUV: posterUV,
+          backdropUV: backdropUV,
           streamSlotId: streamSlotId,
-          // You might want to assign a slot for the background/poster here too if needed for details view
-          // For now, let's just return text data
           metadata: {
              ratingKey: metadata.ratingKey,
              type: metadata.type,
@@ -117,4 +121,3 @@ const createUiRouter = ({ plexClient, slotManager, atlasManager }) => {
 };
 
 module.exports = { createUiRouter };
-

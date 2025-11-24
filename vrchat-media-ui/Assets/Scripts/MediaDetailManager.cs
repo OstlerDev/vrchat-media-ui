@@ -16,6 +16,7 @@ public class MediaDetailManager : UdonSharpBehaviour
     public TextMeshProUGUI subtitleText;
     public TextMeshProUGUI descriptionText;
     public RawImage posterImage;
+    public RawImage backdropImage;
     public MediaUIButton playButton;
     
     [Header("References")]
@@ -24,6 +25,13 @@ public class MediaDetailManager : UdonSharpBehaviour
 
     private VRCImageDownloader _imageDownloader;
     private int _streamSlotId = -1;
+    
+    // We now only download one image (the atlas)
+    private IVRCImageDownload _atlasDownload;
+
+    // Stored UVs to apply when atlas loads
+    private Rect _posterRect;
+    private Rect _backdropRect;
 
     void Start()
     {
@@ -52,19 +60,35 @@ public class MediaDetailManager : UdonSharpBehaviour
             if (descriptionText != null) descriptionText.text = data["description"].String;
         }
 
-        if (data.ContainsKey("imageSlotId"))
+        // Default UVs if not provided
+        _posterRect = new Rect(0, 0, 1, 1);
+        _backdropRect = new Rect(0, 0, 1, 1);
+
+        if (data.ContainsKey("posterUV"))
         {
-            int imageSlotId = (int)data["imageSlotId"].Number;
+            _posterRect = ParseRect(data["posterUV"].DataDictionary);
+        }
+
+        if (data.ContainsKey("backdropUV"))
+        {
+            _backdropRect = ParseRect(data["backdropUV"].DataDictionary);
+        }
+
+        if (data.ContainsKey("atlasSlotId"))
+        {
+            int atlasSlotId = (int)data["atlasSlotId"].Number;
             if (apiManager != null)
             {
-                VRCUrl url = apiManager.GetImageSlotUrl(imageSlotId);
+                VRCUrl url = apiManager.GetImageSlotUrl(atlasSlotId);
                 if (url != null)
                 {
-                    Debug.Log($"[MediaDetailManager] Requesting poster from slot {imageSlotId}: {url}");
-                    _imageDownloader.DownloadImage(url, null, (UdonBehaviour)this.GetComponent(typeof(UdonBehaviour)), null);
+                    Debug.Log($"[MediaDetailManager] Requesting detail atlas from slot {atlasSlotId}: {url}");
+                    _atlasDownload = _imageDownloader.DownloadImage(url, null, (UdonBehaviour)this.GetComponent(typeof(UdonBehaviour)), null);
                 }
             }
         }
+        // Fallback to old imageSlotId if atlasSlotId is missing?
+        // For now, assume new server version.
 
         if (data.ContainsKey("streamSlotId"))
         {
@@ -77,6 +101,18 @@ public class MediaDetailManager : UdonSharpBehaviour
 
         // Show this screen
         this.gameObject.SetActive(true);
+    }
+
+    private Rect ParseRect(DataDictionary dict)
+    {
+        if (dict == null) return new Rect(0, 0, 1, 1);
+        
+        float x = (float)dict["x"].Number;
+        float y = (float)dict["y"].Number;
+        float w = (float)dict["w"].Number;
+        float h = (float)dict["h"].Number;
+        
+        return new Rect(x, y, w, h);
     }
     
     public void PlayMovie()
@@ -116,17 +152,31 @@ public class MediaDetailManager : UdonSharpBehaviour
 
     public override void OnImageLoadSuccess(IVRCImageDownload result)
     {
-        Debug.Log("[MediaDetailManager] Poster loaded successfully");
-        if (posterImage != null)
+        if (result == _atlasDownload)
         {
-            posterImage.texture = result.Result;
-            posterImage.uvRect = new Rect(0, 0, 1, 1);
+            Debug.Log("[MediaDetailManager] Detail Atlas loaded successfully");
+            Texture2D atlas = result.Result;
+
+            if (posterImage != null)
+            {
+                posterImage.texture = atlas;
+                posterImage.uvRect = _posterRect;
+            }
+            
+            if (backdropImage != null)
+            {
+                backdropImage.texture = atlas;
+                backdropImage.uvRect = _backdropRect;
+            }
+            
+            _atlasDownload = null;
         }
     }
 
     public override void OnImageLoadError(IVRCImageDownload result)
     {
-        Debug.LogError($"[MediaDetailManager] Poster download failed: {result.ErrorMessage}");
+        Debug.LogError($"[MediaDetailManager] Image download failed: {result.ErrorMessage}");
+        if (result == _atlasDownload) _atlasDownload = null;
     }
     
     public void OnBackClicked()
