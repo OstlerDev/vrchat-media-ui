@@ -15,6 +15,9 @@ public class APIManager : UdonSharpBehaviour
     public VRCUrl[] imageSlotUrls; // Image Slots: /imgs/slots/0...
 
     [Header("Screens")]
+    public GameObject gridScreen;
+    public GameObject detailScreen;
+    public GameObject errorScreen;
     public MediaGridManager gridManager;
     public MediaDetailManager detailManager;
 
@@ -75,6 +78,9 @@ public class APIManager : UdonSharpBehaviour
                     if (screenType == "error")
                     {
                         Debug.LogError("[APIManager] Server returned error: " + (dict.ContainsKey("message") ? dict["message"].String : "Unknown"));
+                        if (errorScreen != null) errorScreen.SetActive(true);
+                        if (gridScreen != null) gridScreen.SetActive(false);
+                        if (detailScreen != null) detailScreen.SetActive(false);
                         return;
                     }
 
@@ -97,27 +103,48 @@ public class APIManager : UdonSharpBehaviour
         // Simple Routing Logic: Toggle visibility based on screen type
         if (screenType == "grid" || screenType == "home")
         {
+            if (gridScreen != null) gridScreen.SetActive(true);
+            if (detailScreen != null) detailScreen.SetActive(false);
+            if (errorScreen != null) errorScreen.SetActive(false);
+
             if (gridManager != null)
             {
+                // Ensure manager is active if it's not on the screen object
                 gridManager.gameObject.SetActive(true);
                 gridManager.OnApiResponse(data);
             }
-            if (detailManager != null) detailManager.Hide();
+            
+            if (detailManager != null && detailScreen == null)
+            {
+                // Fallback if screen reference is missing
+                detailManager.Hide();
+            }
         }
         else if (screenType == "details")
         {
+            if (detailScreen != null) detailScreen.SetActive(true);
+            if (gridScreen != null) gridScreen.SetActive(false);
+            if (errorScreen != null) errorScreen.SetActive(false);
+
             if (detailManager != null)
             {
                 detailManager.gameObject.SetActive(true);
                 detailManager.OnApiResponse(data);
             }
-            if (gridManager != null) gridManager.gameObject.SetActive(false);
+
+            if (gridManager != null && gridScreen == null)
+            {
+                gridManager.gameObject.SetActive(false);
+            }
         }
     }
 
     public override void OnStringLoadError(IVRCStringDownload result)
     {
         Debug.LogError($"[APIManager] Download failed (Type: {_lastRequestType}): {result.Error}");
+        if (errorScreen != null) errorScreen.SetActive(true);
+        if (gridScreen != null) gridScreen.SetActive(false);
+        if (detailScreen != null) detailScreen.SetActive(false);
     }
     
     public VRCUrl GetImageSlotUrl(int slotId)
