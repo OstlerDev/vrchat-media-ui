@@ -59,8 +59,7 @@ MonoBehaviour:
   subtitleText: {fileID: 0}
   descriptionText: {fileID: 0}
   posterImage: {fileID: 0}
-  apiManager: {fileID: 2135439260653667804, guid: 00c312deea3c265478d546df5bfc7e4d,
-    type: 3}
+  apiManager: {fileID: 0}
 --- !u!114 &3411254781292206911
 MonoBehaviour:
   m_ObjectHideFlags: 0
